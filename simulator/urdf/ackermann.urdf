@@ -3,9 +3,9 @@
 
   <!-- ****************** ROBOT CONSTANTS *******************************  -->
   <!-- Define the size of the robot's main chassis in meters -->
-  <xacro:property name="base_width" value="0.39" />
-  <xacro:property name="base_length" value="0.70" />
-  <xacro:property name="base_height" value="0.20" />
+  <xacro:property name="base_width" value="0.85" />
+  <xacro:property name="base_length" value="1.05" />
+  <xacro:property name="base_height" value="0.015" />
 
   <!-- Define the shape of the robot's two back wheels in meters -->
   <xacro:property name="wheel_radius" value="0.14" />
@@ -16,13 +16,11 @@
   <xacro:property name="wheel_ygap" value="0.035" />
 
   <!-- Position the wheels along the z-axis -->
-  <xacro:property name="wheel_zoff" value="0.05" />
+  <xacro:property name="wheel_zoff" value="0" />
 
   <!-- Position the wheels along the x-axis -->
-  <xacro:property name="wheel_xoff" value="0.221" />
+  <xacro:property name="wheel_xoff" value="0.525" />
 
-  <!-- Position the caster wheel along the x-axis -->
-  <xacro:property name="caster_xoff" value="0.217" />
 
   <!-- Define intertial property macros  -->
   <xacro:macro name="box_inertia" params="m w h d">
@@ -59,9 +57,9 @@
   <!-- ********************** ROBOT BASE *********************************  -->
   <link name="base_link">
     <visual>
-      <origin xyz="0 0 -0.05" rpy="1.5707963267949 0 3.141592654" />
+      <origin xyz="-0.525 0 -0.015" rpy="0 0 0" />
       <geometry>
-        <mesh filename="file://$(find simulator)/meshes/robot_base.stl" />
+        <mesh filename="file://$(find simulator)/meshes/gokart/BodyV1.stl" />
       </geometry>
       <material name="Red">
         <color rgba="1.0 0.0 0.0 1.0" />
@@ -184,11 +182,11 @@
   <!-- Instantiate two wheels using the macro we just made through the 
        xacro:wheel tags. We also define the parameters to have one wheel
        on both sides at the back of our robot (i.e. x_reflect=-1). -->
-  <xacro:wheel prefix="drivewhl_l" x_reflect="-1" y_reflect="1.2" />
-  <xacro:wheel prefix="drivewhl_r" x_reflect="-1" y_reflect="-1.2" />
+  <xacro:wheel prefix="drivewhl_l" x_reflect="-1" y_reflect="1" />
+  <xacro:wheel prefix="drivewhl_r" x_reflect="-1" y_reflect="-1" />
 
-  <xacro:steer_wheel prefix="drivewhl_fl" x_reflect="1" y_reflect="1.2" side="1" />
-  <xacro:steer_wheel prefix="drivewhl_fr" x_reflect="1" y_reflect="-1.2"  side="-1" />
+  <xacro:steer_wheel prefix="drivewhl_fl" x_reflect="1" y_reflect="1" side="0" />
+  <xacro:steer_wheel prefix="drivewhl_fr" x_reflect="1" y_reflect="-1"  side="0" />
 
   <!-- plugins -->
 
