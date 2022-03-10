@@ -3,6 +3,7 @@
 #include <gazebo/physics/physics.hh>
 #include <iostream>
 #include <gazebo_ros/node.hpp>
+#include <math.h>
 
 namespace gokart_gazebo_plugin
 {
@@ -105,7 +106,23 @@ void GokartGazeboPlugin::Update()
   rear_left_motor.joint_->SetForce(0, force_rear_left); // need to chceck if id of rotation axis is 0
   rear_right_motor.joint_->SetForce(0, force_rear_right);
 
+  // Car dimensions
+  double L = 1.050; // wheelbase [m] TODO compute automaticaly from joint definition
+  double T = 1.1; // track width [m] TODO compute automaticaly from joint definition
+  
+  // Compute ackermann geometry
+  double front_left_steering_desired_angle = atan(L/((L/tan(desired_steering_angle)) - T/2.0));
+  double front_right_steering_desired_angle = atan(L/((L/tan(desired_steering_angle)) + T/2.0));
+  
   // Compute pid for steering
+  auto err_front_left_steer = front_left_steering.joint_->Position(0) - front_left_steering_desired_angle; // need to chceck if id of rotation axis is 0
+  auto err_front_right_steer = front_right_steering.joint_->Position(0) - front_right_steering_desired_angle;
+
+  auto force_front_left_steer = front_left_steering.pid.Update(err_front_left_steer, dt);
+  auto force_front_right_steer = front_right_steering.pid.Update(err_front_right_steer, dt);
+
+  front_left_steering.joint_->SetForce(0, force_front_left_steer); // need to chceck if id of rotation axis is 0
+  front_right_steering.joint_->SetForce(0, force_front_right_steer);
 
   last_sim_time_ = cur_time;
 }
