@@ -21,15 +21,17 @@ class Joint
         void SetJoint(std::string name,
                 double _p,
                 double _i,
-                double _d)
+                double _d,
+                gazebo::physics::JointPtr joint_)
         {
             name = name;
             pid.SetPGain(_p);
             pid.SetIGain(_i);
             pid.SetDGain(_d);
+            joint_ = joint_;
         }
 
-    private:
+        gazebo::physics::JointPtr joint_;
         std::string name;
         gazebo::common::PID pid;
 };
