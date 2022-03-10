@@ -111,9 +111,16 @@ void GokartGazeboPlugin::Update()
   double T = 1.1; // track width [m] TODO compute automaticaly from joint definition
   
   // Compute ackermann geometry
-  double front_left_steering_desired_angle = atan(L/((L/tan(desired_steering_angle)) - T/2.0));
-  double front_right_steering_desired_angle = atan(L/((L/tan(desired_steering_angle)) + T/2.0));
-  
+  double front_left_steering_desired_angle;
+  double front_right_steering_desired_angle;
+
+  if (desired_steering_angle < 0.005 && desired_steering_angle > -0.005){
+    front_left_steering_desired_angle = desired_steering_angle;
+    front_right_steering_desired_angle = desired_steering_angle;
+  } else {
+    front_left_steering_desired_angle = atan(L/((L/tan(desired_steering_angle)) - T/2.0));
+    front_right_steering_desired_angle = atan(L/((L/tan(desired_steering_angle)) + T/2.0));
+  }
   // Compute pid for steering
   auto err_front_left_steer = front_left_steering.joint_->Position(0) - front_left_steering_desired_angle; // need to chceck if id of rotation axis is 0
   auto err_front_right_steer = front_right_steering.joint_->Position(0) - front_right_steering_desired_angle;
