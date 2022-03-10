@@ -43,28 +43,40 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
     }
   );
 
-  fl_steering_joint_name = "front_left_steering_joint";
-  fr_steering_joint_name = "front_right_steering_joint";
-  rl_wheel_joint_name = "back_left_wheel_joint";
-  rr_wheel_joint_name = "back_right_wheel_joint";
+  std::string fl_steering_joint_name = "front_left_steering_joint";
+  std::string fr_steering_joint_name = "front_right_steering_joint";
+  std::string rl_motor_joint_name = "back_left_wheel_joint";
+  std::string rr_motor_joint_name = "back_right_wheel_joint";
 
-  auto fl_steering_joint = model_->GetJoint(fl_steering_joint_name);
-  auto fr_steering_joint = model_->GetJoint(fr_steering_joint_name);
-  auto rl_wheel_joint = model_->GetJoint(rl_wheel_joint_name);
-  auto rr_wheel_joint = model_->GetJoint(rr_wheel_joint_name);
+  front_left_steering.SetJoint(fl_steering_joint_name, 
+    10.0, 
+    0.0, 
+    0.0,
+    model_->GetJoint(fl_steering_joint_name)
+  );
 
-  auto fl_steering_joint_pid = gazebo::common::PID{10.0, 0.0, 0.0};
-  auto fr_steering_joint_pid = gazebo::common::PID{10.0, 0.0, 0.0};
-  auto rl_wheel_joint_pid = gazebo::common::PID{10.0, 0.0, 0.0};
-  auto rr_wheel_joint_pid = gazebo::common::PID{10.0, 0.0, 0.0};
+  front_right_steering.SetJoint(fr_steering_joint_name, 
+    10.0, 
+    0.0, 
+    0.0,
+    model_->GetJoint(fr_steering_joint_name)
+  );
 
+  rear_left_motor.SetJoint(rl_motor_joint_name, 
+    10.0, 
+    0.0, 
+    0.0,
+    model_->GetJoint(rl_motor_joint_name)
+  );
 
+  rear_right_motor.SetJoint(rr_motor_joint_name, 
+    10.0, 
+    0.0, 
+    0.0,
+    model_->GetJoint(rr_motor_joint_name)
+  );
 
-
-  RCLCPP_DEBUG(ros_node_->get_logger(), "Got joints:");
-  for (auto const & j : joints_) {
-    RCLCPP_DEBUG(ros_node_->get_logger(), j.first);
-  }
+  //RCLCPP_DEBUG(ros_node_->get_logger(), "Got joints:");
 
   // Hook into simulation update loop
   update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(
@@ -82,18 +94,18 @@ void GokartGazeboPlugin::Update()
 
   auto dt = (cur_time - last_sim_time_).Double();
 
-  
+  // Compute pid for speed
 
-  // Update joint PIDs
-  for (auto & j : joints_) {
-    auto & joint = j.second.first;
-    auto & pid = j.second.second;
+  auto err_rear_left = rear_left_motor.joint_->GetVelocity(0) - desired_velocity; // need to chceck if id of rotation axis is 0
+  auto err_rear_right = rear_right_motor.joint_->GetVelocity(0) - desired_velocity;
 
-    auto error = joint->Position() - joint_targets_[j.first];
+  auto force_rear_left = rear_left_motor.pid.Update(err_rear_left, dt);
+  auto force_rear_right = rear_right_motor.pid.Update(err_rear_right, dt);
 
-    auto force = pid.Update(error, dt);
-    joint->SetForce(0, force);
-  }
+  rear_left_motor.joint_->SetForce(0, force_rear_left); // need to chceck if id of rotation axis is 0
+  rear_right_motor.joint_->SetForce(0, force_rear_right);
+
+  // Compute pid for steering
 
   last_sim_time_ = cur_time;
 }

@@ -49,13 +49,10 @@ private:
 
   gazebo::event::ConnectionPtr update_connection_;
 
-  std::string fl_steering_joint_name;
-  std::string fr_steering_joint_name;
-  std::string rl_wheel_joint_name;
-  std::string rr_wheel_joint_name;
-
-  std::map<std::string, std::pair<gazebo::physics::JointPtr, gazebo::common::PID>> joints_;
-  std::map<std::string, double> joint_targets_;   
+  gokart_gazebo_plugin::Joint front_left_steering = gokart_gazebo_plugin::Joint{};
+  gokart_gazebo_plugin::Joint front_right_steering = gokart_gazebo_plugin::Joint{};
+  gokart_gazebo_plugin::Joint rear_left_motor = gokart_gazebo_plugin::Joint{};
+  gokart_gazebo_plugin::Joint rear_right_motor = gokart_gazebo_plugin::Joint{};
 
   double desired_steering_angle;
   double desired_velocity;
