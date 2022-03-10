@@ -40,7 +40,7 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
     "/control_cmd",
     1,
     [ = ](ControlCommand::SharedPtr msg) {
-      RCLCPP_INFO(ros_node_->get_logger(), "\033[31mReceiving new command message\033[37m");
+      //RCLCPP_INFO(ros_node_->get_logger(), "\033[31mReceiving new command message\033[37m");
       desired_steering_angle = msg->steering_angle;
       desired_velocity = msg->velocity;
     }
@@ -53,17 +53,16 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
   std::string rl_motor_joint_name = "drivewhl_l_joint";
   std::string rr_motor_joint_name = "drivewhl_r_joint";
 
-  front_left_steering.SetJoint(fl_steering_joint_name, 10.0, 0.0, 0.0);
+  front_left_steering.SetJoint(fl_steering_joint_name, 2.7, 0.5, 0.3);
   front_left_steering.joint_ = model_->GetJoint(fl_steering_joint_name);
 
-  
-  front_right_steering.SetJoint(fr_steering_joint_name, 10.0, 0.0, 0.0);
+  front_right_steering.SetJoint(fr_steering_joint_name, 2.7, 0.5, 0.3);
   front_right_steering.joint_ = model_->GetJoint(fr_steering_joint_name);
 
-  rear_left_motor.SetJoint(rl_motor_joint_name, 10.0, 0.0, 0.0 );
+  rear_left_motor.SetJoint(rl_motor_joint_name, 0.2, 0.0, 0.0);
   rear_left_motor.joint_ = model_->GetJoint(rl_motor_joint_name);
 
-  rear_right_motor.SetJoint(rr_motor_joint_name, 10.0, 0.0, 0.0);
+  rear_right_motor.SetJoint(rr_motor_joint_name, 0.2, 0.0, 0.0);
   rear_right_motor.joint_ = model_->GetJoint(rr_motor_joint_name);
 
   // Hook into simulation update loop
@@ -118,6 +117,8 @@ void GokartGazeboPlugin::Update()
 
   front_left_steering.joint_->SetForce(0, force_front_left_steer); // need to chceck if id of rotation axis is 0
   front_right_steering.joint_->SetForce(0, force_front_right_steer);
+
+  RCLCPP_INFO(ros_node_->get_logger(), "\033[31m" + std::to_string(rear_left_motor.joint_->GetVelocity(0)) + "  " + std::to_string(rear_right_motor.joint_->GetVelocity(0)) + "\033[37m");
 
   last_sim_time_ = cur_time;
 }
