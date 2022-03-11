@@ -86,7 +86,7 @@ void GokartGazeboPlugin::Update()
 
   double wheel_radius = 0.14; // [m] TODO compute automaticaly from joint definition
 
-  double desired_radial_velocity = desired_velocity/wheel_radius;
+  double desired_radial_velocity = desired_velocity / wheel_radius;
 
   auto err_rear_left = rear_left_motor.joint_->GetVelocity(0) - desired_radial_velocity; // need to chceck if id of rotation axis is 0
   auto err_rear_right = rear_right_motor.joint_->GetVelocity(0) - desired_radial_velocity;
