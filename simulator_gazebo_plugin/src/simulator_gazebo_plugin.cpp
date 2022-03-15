@@ -122,7 +122,7 @@ void GokartGazeboPlugin::Update()
   front_left_steering.joint_->SetForce(0, force_front_left_steer); // need to chceck if id of rotation axis is 0
   front_right_steering.joint_->SetForce(0, force_front_right_steer);
 
-  RCLCPP_INFO(ros_node_->get_logger(), "\033[31m" + std::to_string(cur_time.sec) + "  " + std::to_string(rear_left_motor.joint_->GetVelocity(0)) + "  " + std::to_string(rear_right_motor.joint_->GetVelocity(0)) + "\033[37m");
+  // RCLCPP_INFO(ros_node_->get_logger(), "\033[31m" + std::to_string(cur_time.sec) + "  " + std::to_string(rear_left_motor.joint_->GetVelocity(0)) + "  " + std::to_string(rear_right_motor.joint_->GetVelocity(0)) + "\033[37m");
 
   last_sim_time_ = cur_time;
 }
