@@ -21,8 +21,8 @@ def generate_launch_description():
     package_name = 'simulator'
     robot_name_in_model = 'gokart'
     rviz_config_file_path = 'rviz/demo.rviz'
-    urdf_file_path = 'urdf/gokart.urdf'
-    world_file_path = 'worlds/basic.world'
+    urdf_file_path = 'urdf/ackermann.urdf'
+    world_file_path = 'worlds/test_world.world'
 
     # Pose where we want to spawn the robot
     spawn_x_val = '54.93482898'
@@ -77,7 +77,7 @@ def generate_launch_description():
 
     declare_launch_rviz_cmd = DeclareLaunchArgument(
         name='launch_rviz',
-        default_value='True',
+        default_value='False',
         description='Whether to start RVIZ',
     )
 
