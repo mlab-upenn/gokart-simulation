@@ -41,8 +41,31 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
     1,
     [ = ](ControlCommand::SharedPtr msg) {
       //RCLCPP_INFO(ros_node_->get_logger(), "\033[31mReceiving new command message\033[37m");
-      desired_steering_angle = msg->steering_angle;
-      desired_velocity = msg->velocity;
+      if (msg->steering_angle < -0.6)
+      {
+        desired_steering_angle = -0.6;
+      }
+      else if(msg->steering_angle > 0.6)
+      {
+        desired_steering_angle = 0.6;
+      }
+      else
+      {
+        desired_steering_angle = msg->steering_angle;
+      }
+
+      if (msg->velocity < -20)
+      {
+        desired_velocity = -20;
+      }
+      else if(msg->velocity > 20)
+      {
+        desired_velocity = 20;
+      }
+      else
+      {
+        desired_velocity = msg->velocity;
+      }
     }
   );
 
