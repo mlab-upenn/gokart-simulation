@@ -25,10 +25,10 @@ def generate_launch_description():
     world_file_path = 'worlds/basic.world'
 
     # Pose where we want to spawn the robot
-    spawn_x_val = '-0.290488'
-    spawn_y_val = '-0.214924'
-    spawn_z_val = '0.190000'
-    spawn_yaw_val = '3.14159'
+    spawn_x_val = '54.93482898'
+    spawn_y_val = '45.36219518'
+    spawn_z_val = '0.0'
+    spawn_yaw_val = '0'
 
     # Set the path to different files and folders.
     pkg_gazebo_ros = FindPackageShare(package='gazebo_ros').find('gazebo_ros')
