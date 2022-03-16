@@ -34,13 +34,13 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
 
   // Set up ROS node and subscribers and publishers
   ros_node_ = gazebo_ros::Node::Get(sdf);
-  RCLCPP_INFO(ros_node_->get_logger(), "\033[31mLoading Gokart Gazebo Plugin\033[37m");
+  RCLCPP_INFO(ros_node_->get_logger(), "\033[31mLoading Gokart Gazebo Plugin\033[0m");
 
   control_command_sub_ = ros_node_->create_subscription<ControlCommand>(
     "/control_cmd",
     1,
     [ = ](ControlCommand::SharedPtr msg) {
-      //RCLCPP_INFO(ros_node_->get_logger(), "\033[31mReceiving new command message\033[37m");
+      //RCLCPP_INFO(ros_node_->get_logger(), "\033[31mReceiving new command message\033[0m");
       if (msg->steering_angle < -0.6)
       {
         desired_steering_angle = -0.6;
@@ -69,7 +69,7 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
     }
   );
 
-  RCLCPP_INFO(ros_node_->get_logger(), "\033[31mCreating subscriber\033[37m");
+  RCLCPP_INFO(ros_node_->get_logger(), "\033[31mCreating subscriber\033[0m");
 
   std::string fl_steering_joint_name = "drivewhl_fl_steer_joint";
   std::string fr_steering_joint_name = "drivewhl_fr_steer_joint";
@@ -104,7 +104,7 @@ void GokartGazeboPlugin::Update()
   }
 
   auto dt = (cur_time - last_sim_time_).Double();
-  
+
   // Compute pid for speed
 
   double wheel_radius = 0.14; // [m] TODO compute automaticaly from joint definition
@@ -123,7 +123,7 @@ void GokartGazeboPlugin::Update()
   // Car dimensions
   double L = 1.050; // wheelbase [m] TODO compute automaticaly from joint definition
   double T = 1.1; // track width [m] TODO compute automaticaly from joint definition
-  
+
   // Compute ackermann geometry
   double front_left_steering_desired_angle;
   double front_right_steering_desired_angle;
@@ -145,7 +145,7 @@ void GokartGazeboPlugin::Update()
   front_left_steering.joint_->SetForce(0, force_front_left_steer); // need to chceck if id of rotation axis is 0
   front_right_steering.joint_->SetForce(0, force_front_right_steer);
 
-  // RCLCPP_INFO(ros_node_->get_logger(), "\033[31m" + std::to_string(cur_time.sec) + "  " + std::to_string(rear_left_motor.joint_->GetVelocity(0)) + "  " + std::to_string(rear_right_motor.joint_->GetVelocity(0)) + "\033[37m");
+  // RCLCPP_INFO(ros_node_->get_logger(), "\033[31m" + std::to_string(cur_time.sec) + "  " + std::to_string(rear_left_motor.joint_->GetVelocity(0)) + "  " + std::to_string(rear_right_motor.joint_->GetVelocity(0)) + "\033[0m");
 
   last_sim_time_ = cur_time;
 }
