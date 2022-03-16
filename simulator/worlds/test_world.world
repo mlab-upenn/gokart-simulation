@@ -22,16 +22,19 @@
       </spot>
     </light>
 
-    <!-- Ground plane -->
-    <model name='ground_plane'>
+    <!-- Racetrack -->
+    <model name='track_plane'>
       <static>1</static>
-      <link name='link'>
+      <link name='link_track'>
         <collision name='collision'>
           <geometry>
-            <plane>
+            <mesh>
+              <uri>/home/tomas/upenn_projects/gokart/simulator/gokart/src/gokart/simulator/meshes/cube.dae</uri>
+            </mesh>
+            <!--<plane>
               <normal>0 0 1</normal>
               <size>100 100</size>
-            </plane>
+            </plane>-->
           </geometry>
           <surface>
             <friction>
@@ -62,6 +65,55 @@
               <uri>file://media/materials/scripts/gazebo.material</uri>
               <name>Gazebo/Grey</name>
             </script>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+
+<!-- Ground plane -->
+    <model name='ground_plane'>
+      <static>1</static>
+      <link name='link_ground'>
+        <collision name='collision'>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>1000 1000</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>100</mu>
+                <mu2>50</mu2>
+              </ode>
+              <torsional>
+                <ode />
+              </torsional>
+            </friction>
+            <contact>
+              <ode />
+            </contact>
+            <bounce />
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='visual'>
+          <!--<cast_shadows>0</cast_shadows>-->
+          <geometry>
+              <plane>
+              <normal>0 0 1</normal>
+              <size>1000 1000</size>
+            </plane>
+          </geometry>
+          <material>
+            <script>
+              <uri>file:/home/tomas/upenn_projects/gokart/simulator/gokart/src/gokart/simulator/scripts/grass.material</uri>
+              <name>Grass1/Image</name>
+          </script>
           </material>
         </visual>
         <self_collide>0</self_collide>
@@ -103,8 +155,14 @@
       <model name='ground_plane'>
         <pose>0 0 0 0 -0 0</pose>
         <scale>1 1 1</scale>
-        <link name='link'>
+        <link name='link_track'>
           <pose>0 0 0 0 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+        <link name='link_ground'>
+          <pose>0 0 0 -0.001 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -119,7 +177,7 @@
     <!-- Default setings of user camera -->
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>3.17226 -5.10401 6.58845 0 0.739643 2.19219</pose>
+        <pose>64.93482898 45.36219518 6.58845 0 0.739643 3.19219</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
