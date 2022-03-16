@@ -16,6 +16,7 @@
   <exec_depend>rviz2</exec_depend>
   <exec_depend>gazebo_ros_pkgs</exec_depend>
   <exec_depend>hector_gazebo_plugins</exec_depend>
+  <exec_depend>simulator_gazebo_plugin</exec_depend>
   <!-- maybe we don't need the following one -->
   <exec_depend>robot_localization</exec_depend>
 
@@ -24,5 +25,14 @@
 
   <export>
     <build_type>ament_cmake</build_type>
+    <!--
+      see:
+        https://github.com/ros-simulation/gazebo_ros_pkgs/wiki/ROS-2-Migration:-Gazebo-ROS-Paths
+        https://github.com/ros-simulation/gazebo_ros_pkgs/blob/foxy/gazebo_ros/scripts/gazebo_ros_paths.py
+        https://github.com/robotology/robotology-superbuild/issues/233
+        https://gazebosim.org/tutorials?tut=components#EnvironmentVariables
+    -->
+    <gazebo_ros gazebo_model_path="${prefix}/models" />
+    <gazebo_ros gazebo_media_path="${prefix}" />
   </export>
 </package>

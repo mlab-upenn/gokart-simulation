@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<?xml-model href="http://sdformat.org/schemas/root.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <sdf version='1.7'>
   <world name='default'>
 
@@ -29,7 +30,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>/home/tomas/upenn_projects/gokart/simulator/gokart/src/gokart/simulator/meshes/cube.dae</uri>
+              <uri>file://meshes/cube.dae</uri>
             </mesh>
             <!--<plane>
               <normal>0 0 1</normal>
@@ -56,14 +57,16 @@
         <visual name='visual'>
           <!--<cast_shadows>0</cast_shadows>-->
           <geometry>
-              <mesh>
-                <uri>/home/tomas/upenn_projects/gokart/simulator/gokart/src/gokart/simulator/meshes/cube.dae</uri>
-              </mesh>
+            <mesh>
+              <uri>file://meshes/cube.dae</uri>
+            </mesh>
           </geometry>
           <material>
             <script>
               <uri>file://media/materials/scripts/gazebo.material</uri>
               <name>Gazebo/Grey</name>
+              <!-- <name>Gazebo/Motorway</name> -->
+              <!-- <name>Gazebo/Road</name> -->
             </script>
           </material>
         </visual>
@@ -73,7 +76,7 @@
       </link>
     </model>
 
-<!-- Ground plane -->
+    <!-- Ground plane -->
     <model name='ground_plane'>
       <static>1</static>
       <link name='link_ground'>
@@ -104,16 +107,19 @@
         <visual name='visual'>
           <!--<cast_shadows>0</cast_shadows>-->
           <geometry>
-              <plane>
+            <plane>
               <normal>0 0 1</normal>
               <size>1000 1000</size>
             </plane>
           </geometry>
           <material>
             <script>
-              <uri>file:/home/tomas/upenn_projects/gokart/simulator/gokart/src/gokart/simulator/scripts/grass.material</uri>
-              <name>Grass1/Image</name>
-          </script>
+              <!-- <uri>file://materials/scripts/gokart.material</uri> -->
+              <!-- <name>GoKart/Grass1</name> -->
+              <!-- <name>GoKart/Grass2</name> -->
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grass</name>
+            </script>
           </material>
         </visual>
         <self_collide>0</self_collide>
@@ -137,7 +143,7 @@
       <shadows>1</shadows>
     </scene>
     <wind />
-    
+
     <!-- GPS base coordinates -->
     <spherical_coordinates>
       <surface_model>EARTH_WGS84</surface_model>
@@ -146,7 +152,7 @@
       <elevation>173.269</elevation>
       <heading_deg>0.0</heading_deg>
     </spherical_coordinates>
-    
+
     <state world_name='default'>
       <sim_time>0 0</sim_time>
       <real_time>0 0</real_time>
@@ -168,13 +174,13 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      
+
       <light name='sun'>
         <pose>0 0 10 0 -0 0</pose>
       </light>
     </state>
 
-    <!-- Default setings of user camera -->
+    <!-- Default settings of user camera -->
     <gui fullscreen='0'>
       <camera name='user_camera'>
         <pose>64.93482898 45.36219518 6.58845 0 0.739643 3.19219</pose>

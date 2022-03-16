@@ -117,7 +117,7 @@
       <xacro:cylinder_inertia m="0.5" r="${wheel_radius}" h="${wheel_width}" />
     </link>
 
-    <!-- Connect the wheels to the base_link at the appropriate location, and 
+    <!-- Connect the wheels to the base_link at the appropriate location, and
          define a continuous joint to allow the wheels to freely rotate about
          an axis -->
     <joint name="${prefix}_joint" type="continuous">
@@ -137,7 +137,7 @@
       <xacro:cylinder_inertia m="0.1" r="${wheel_radius}" h="${wheel_width}" />
     </link>
 
-    <!-- Connect the steer_link to the base_link at the appropriate location, and 
+    <!-- Connect the steer_link to the base_link at the appropriate location, and
          define a continuous joint to allow the wheels to freely rotate about
          an axis -->
     <joint name="${prefix}_steer_joint" type="continuous">
@@ -170,7 +170,7 @@
       <xacro:cylinder_inertia m="0.5" r="${wheel_radius}" h="${wheel_width}" />
     </link>
 
-    <!-- Connect the wheels to the steer_link at the appropriate location, and 
+    <!-- Connect the wheels to the steer_link at the appropriate location, and
          define a continuous joint to allow the wheels to freely rotate about
          an axis -->
     <joint name="${prefix}_joint" type="continuous">
@@ -181,7 +181,7 @@
     </joint>
   </xacro:macro>
 
-  <!-- Instantiate two wheels using the macro we just made through the 
+  <!-- Instantiate two wheels using the macro we just made through the
        xacro:wheel tags. We also define the parameters to have one wheel
        on both sides at the back of our robot (i.e. x_reflect=-1). -->
   <xacro:wheel prefix="drivewhl_l" x_reflect="-1" y_reflect="1" />

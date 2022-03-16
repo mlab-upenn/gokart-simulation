@@ -17,7 +17,6 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
 
     # Constants for paths to different files and folders
-    gazebo_models_path = 'models'
     package_name = 'simulator'
     robot_name_in_model = 'gokart'
     rviz_config_file_path = 'rviz/demo.rviz'
@@ -36,9 +35,6 @@ def generate_launch_description():
     default_urdf_model_path = os.path.join(pkg_share, urdf_file_path)
     default_rviz_config_path = os.path.join(pkg_share, rviz_config_file_path)
     world_path = os.path.join(pkg_share, world_file_path)
-    gazebo_models_path = os.path.join(pkg_share, gazebo_models_path)
-    # TODO: Maybe also add the global Gazebol model path, if there is any...
-    os.environ["GAZEBO_MODEL_PATH"] = gazebo_models_path
 
     # Launch configuration variables specific to simulation
     gui = LaunchConfiguration('gui')
