@@ -48,7 +48,7 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
 
   RCLCPP_INFO(ros_node_->get_logger(), red("Setting up ROS node..."));
 
-  ground_truth_pub_ = ros_node_->create_publisher<Odometry>("/ground_truth/pose", 1);
+  ground_truth_pub_ = ros_node_->create_publisher<Odometry>("/ground_truth", 1);
 
   control_command_sub_ = ros_node_->create_subscription<ControlCommand>(
     "/control_cmd", 1, [=](ControlCommand::SharedPtr msg) {
@@ -105,6 +105,18 @@ void GokartGazeboPlugin::Update()
   ground_truth_msg_.pose.pose.position.x = pose.Pos().X();
   ground_truth_msg_.pose.pose.position.y = pose.Pos().Y();
   ground_truth_msg_.pose.pose.position.z = pose.Pos().Z();
+  ground_truth_msg_.pose.pose.orientation.x = pose.Rot().X();
+  ground_truth_msg_.pose.pose.orientation.y = pose.Rot().Y();
+  ground_truth_msg_.pose.pose.orientation.z = pose.Rot().Z();
+  ground_truth_msg_.pose.pose.orientation.w = pose.Rot().W();
+  ignition::math::Vector3d lin_velocity = base_link_->WorldLinearVel();
+  ground_truth_msg_.twist.twist.linear.x = lin_velocity.X();
+  ground_truth_msg_.twist.twist.linear.y = lin_velocity.Y();
+  ground_truth_msg_.twist.twist.linear.z = lin_velocity.Z();
+  ignition::math::Vector3d angular_velocity = base_link_->WorldAngularVel();
+  ground_truth_msg_.twist.twist.angular.x = angular_velocity.X();
+  ground_truth_msg_.twist.twist.angular.y = angular_velocity.Y();
+  ground_truth_msg_.twist.twist.angular.z = angular_velocity.Z();
   ground_truth_pub_->publish(ground_truth_msg_);
 
   auto dt = (cur_time - last_sim_time_).Double();
