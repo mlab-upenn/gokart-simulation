@@ -84,6 +84,10 @@
       <origin xyz="0 ${y_reflect*(base_width/2)} 0" rpy="0 0 0" />
       <axis xyz="0 1 0" />
     </joint>
+
+    <gazebo reference="${prefix}_link">
+      <material>Gazebo/Grey</material>
+    </gazebo>
   </xacro:macro>
 
 
@@ -136,6 +140,10 @@
       <origin xyz="0 ${y_reflect*steering_hinge_offset} 0" rpy="0 0 0" />
       <axis xyz="0 1 0" />
     </joint>
+
+    <gazebo reference="${prefix}_link">
+      <material>Gazebo/Grey</material>
+    </gazebo>
   </xacro:macro>
 
 
