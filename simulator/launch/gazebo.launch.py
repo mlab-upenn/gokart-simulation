@@ -20,7 +20,7 @@ def generate_launch_description():
     package_name = 'simulator'
     robot_name_in_model = 'gokart'
     rviz_config_file_path = 'rviz/demo.rviz'
-    urdf_file_path = 'urdf/ackermann.urdf'
+    urdf_file_path = 'urdf/gokart.urdf'
     world_file_path = 'worlds/test_world.world'
 
     # Pose where we want to spawn the robot
@@ -142,6 +142,9 @@ def generate_launch_description():
         condition=IfCondition(use_simulator),
         launch_arguments=[
             ('world', world),
+            # ('pause', 'true'),
+            # ('gdb', 'false'),
+            # ('extra_gazebo_args', '--verbose')
         ],
     )
 

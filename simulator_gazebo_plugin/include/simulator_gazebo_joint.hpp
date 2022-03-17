@@ -10,30 +10,26 @@ namespace gokart_gazebo_plugin
 
 class Joint
 {
-    public:
-        Joint():
-        name{""},
-        pid{0.0, 0.0, 0.0}
-        {
+public:
+  Joint()
+  : name{""},
+    pid{0.0, 0.0, 0.0} {
 
-        };
+    };
 
-        void SetJoint(std::string name,
-                double _p,
-                double _i,
-                double _d)
-        {
-            name = name;
-            pid.SetPGain(_p);
-            pid.SetIGain(_i);
-            pid.SetDGain(_d);
-        }
+  void SetJoint(std::string name, double _p, double _i, double _d)
+  {
+    name = name;
+    pid.SetPGain(_p);
+    pid.SetIGain(_i);
+    pid.SetDGain(_d);
+  }
 
-        gazebo::physics::JointPtr joint_;
-        std::string name;
-        gazebo::common::PID pid;
+  gazebo::physics::JointPtr joint_;
+  std::string name;
+  gazebo::common::PID pid;
 };
 
-}
+}  // namespace gokart_gazebo_plugin
 
 #endif

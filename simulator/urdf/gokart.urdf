@@ -1,52 +1,27 @@
 <?xml version="1.0"?>
 <robot name="gokart" xmlns:xacro="http://ros.org/wiki/xacro">
 
+  <xacro:include filename="$(find simulator)/urdf/inertias.urdf" />
+
   <!-- ****************** ROBOT CONSTANTS *******************************  -->
   <!-- Define the size of the robot's main chassis in meters -->
-  <xacro:property name="base_width" value="0.39" />
-  <xacro:property name="base_length" value="0.70" />
-  <xacro:property name="base_height" value="0.20" />
+  <xacro:property name="base_width" value="0.85" />
+  <xacro:property name="base_length" value="1.05" />
+  <xacro:property name="base_height" value="0.015" />
 
   <!-- Define the shape of the robot's two back wheels in meters -->
-  <xacro:property name="wheel_radius" value="0.14" />
-  <xacro:property name="wheel_width" value="0.06" />
+  <xacro:property name="wheel_radius" value="0.1397" />
+  <xacro:property name="wheel_width" value="0.09525" /> <!-- 0.1905 -->
 
   <!-- x-axis points forward, y-axis points to left, z-axis points upwards -->
   <!-- Define the gap between the wheel and chassis along y-axis in meters -->
   <xacro:property name="wheel_ygap" value="0.035" />
 
   <!-- Position the wheels along the z-axis -->
-  <xacro:property name="wheel_zoff" value="0.05" />
+  <xacro:property name="wheel_zoff" value="0" />
 
   <!-- Position the wheels along the x-axis -->
-  <xacro:property name="wheel_xoff" value="0.221" />
-
-  <!-- Position the caster wheel along the x-axis -->
-  <xacro:property name="caster_xoff" value="0.217" />
-
-  <!-- Define intertial property macros  -->
-  <xacro:macro name="box_inertia" params="m w h d">
-    <inertial>
-      <origin xyz="0 0 0" rpy="${pi/2} 0 ${pi/2}" />
-      <mass value="${m}" />
-      <inertia ixx="${(m/12) * (h*h + d*d)}" ixy="0.0" ixz="0.0" iyy="${(m/12) * (w*w + d*d)}" iyz="0.0" izz="${(m/12) * (w*w + h*h)}" />
-    </inertial>
-  </xacro:macro>
-
-  <xacro:macro name="cylinder_inertia" params="m r h">
-    <inertial>
-      <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
-      <mass value="${m}" />
-      <inertia ixx="${(m/12) * (3*r*r + h*h)}" ixy="0" ixz="0" iyy="${(m/12) * (3*r*r + h*h)}" iyz="0" izz="${(m/2) * (r*r)}" />
-    </inertial>
-  </xacro:macro>
-
-  <xacro:macro name="sphere_inertia" params="m r">
-    <inertial>
-      <mass value="${m}" />
-      <inertia ixx="${(2/5) * m * (r*r)}" ixy="0.0" ixz="0.0" iyy="${(2/5) * m * (r*r)}" iyz="0.0" izz="${(2/5) * m * (r*r)}" />
-    </inertial>
-  </xacro:macro>
+  <xacro:property name="wheel_xoff" value="0.525" />
 
   <link name="root_link"></link>
 
@@ -59,9 +34,9 @@
   <!-- ********************** ROBOT BASE *********************************  -->
   <link name="base_link">
     <visual>
-      <origin xyz="0 0 -0.05" rpy="1.5707963267949 0 3.141592654" />
+      <origin xyz="-0.525 0 -0.015" rpy="0 0 0" />
       <geometry>
-        <mesh filename="file://$(find simulator)/meshes/robot_base.stl" />
+        <mesh filename="file://$(find simulator)/meshes/gokart/BodyV1.stl" />
       </geometry>
       <material name="Red">
         <color rgba="1.0 0.0 0.0 1.0" />
@@ -99,9 +74,10 @@
   <xacro:macro name="wheel" params="prefix x_reflect y_reflect">
     <link name="${prefix}_link">
       <visual>
-        <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
+        <origin xyz="0 0.09525 0" rpy="${pi/2} 0 0" />
         <geometry>
-          <cylinder radius="${wheel_radius}" length="${wheel_width}" />
+          <mesh filename="file://$(find simulator)/meshes/gokart/WheelV1.stl" />
+          <!-- <cylinder radius="${wheel_radius}" length="${wheel_width}" /> -->
         </geometry>
         <material name="Gray">
           <color rgba="0.5 0.5 0.5 1.0" />
@@ -118,7 +94,7 @@
       <xacro:cylinder_inertia m="0.5" r="${wheel_radius}" h="${wheel_width}" />
     </link>
 
-    <!-- Connect the wheels to the base_link at the appropriate location, and 
+    <!-- Connect the wheels to the base_link at the appropriate location, and
          define a continuous joint to allow the wheels to freely rotate about
          an axis -->
     <joint name="${prefix}_joint" type="continuous">
@@ -129,47 +105,91 @@
     </joint>
   </xacro:macro>
 
-  <!-- Instantiate two wheels using the macro we just made through the 
+  <!-- *********************** STEER WHEELS ******************************  -->
+  <xacro:macro name="steer_wheel" params="prefix x_reflect y_reflect">
+    <!-- Steer hinge -->
+    <link name="${prefix}_steer_link">
+      <xacro:cylinder_inertia m="0.1" r="${wheel_radius}" h="${wheel_width}" />
+    </link>
+
+    <!-- Connect the steer_link to the base_link at the appropriate location, and
+         define a continuous joint to allow the wheels to freely rotate about
+         an axis -->
+    <joint name="${prefix}_steer_joint" type="continuous">
+      <parent link="base_link" />
+      <child link="${prefix}_steer_link" />
+      <origin xyz="${x_reflect*wheel_xoff} ${y_reflect*(base_width/2+wheel_ygap)} ${-wheel_zoff}" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+    </joint>
+
+    <!-- Wheel -->
+    <link name="${prefix}_link">
+      <visual>
+        <origin xyz="0 0.09525 0" rpy="${pi/2} 0 0" />
+        <geometry>
+          <mesh filename="file://$(find simulator)/meshes/gokart/WheelV1.stl" />
+          <!-- <cylinder radius="${wheel_radius}" length="${wheel_width}" /> -->
+        </geometry>
+        <material name="Gray">
+          <color rgba="0.5 0.5 0.5 1.0" />
+        </material>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}" />
+        </geometry>
+      </collision>
+
+      <xacro:cylinder_inertia m="0.5" r="${wheel_radius}" h="${wheel_width}" />
+    </link>
+
+    <!-- Connect the wheels to the steer_link at the appropriate location, and
+         define a continuous joint to allow the wheels to freely rotate about
+         an axis -->
+    <joint name="${prefix}_joint" type="continuous">
+      <parent link="${prefix}_steer_link" />
+      <child link="${prefix}_link" />
+      <origin xyz="0 ${y_reflect*0.02} 0" rpy="0 0 0" />
+      <axis xyz="0 1 0" />
+    </joint>
+  </xacro:macro>
+
+  <!-- Instantiate two wheels using the macro we just made through the
        xacro:wheel tags. We also define the parameters to have one wheel
        on both sides at the back of our robot (i.e. x_reflect=-1). -->
-  <xacro:wheel prefix="drivewhl_l" x_reflect="-1" y_reflect="1" />
-  <xacro:wheel prefix="drivewhl_r" x_reflect="-1" y_reflect="-1" />
+  <xacro:wheel prefix="wheel_rl" x_reflect="-1" y_reflect="1" />
+  <xacro:wheel prefix="wheel_rr" x_reflect="-1" y_reflect="-1" />
 
-  <!-- *********************** CASTER WHEEL ******************************  -->
-  <!-- We add a caster wheel. It will be modeled as sphere.
-       We define the wheel’s geometry, material and the joint to connect it to 
-       base_link at the appropriate location. -->
-  <link name="front_caster">
-    <visual>
-      <geometry>
-        <sphere radius="${(wheel_radius+wheel_zoff-(base_height/2))}" />
-      </geometry>
-      <material name="Cyan">
-        <color rgba="0 1.0 1.0 1.0" />
-      </material>
-    </visual>
+  <xacro:steer_wheel prefix="wheel_fl" x_reflect="1" y_reflect="1" />
+  <xacro:steer_wheel prefix="wheel_fr" x_reflect="1" y_reflect="-1" />
 
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <sphere radius="${(wheel_radius+wheel_zoff-(base_height/2))}" />
-      </geometry>
-    </collision>
+  <!-- plugins -->
 
-    <xacro:sphere_inertia m="0.5" r="${(wheel_radius+wheel_zoff-(base_height/2))}" />
-  </link>
-
-  <gazebo reference="front_caster">
-    <mu1>0.01</mu1>
-    <mu2>0.01</mu2>
-    <material>Gazebo/White</material>
+  <!-- *********************** ACKERMANN CONTROL **********************************  -->
+  <gazebo>
+    <plugin name="simulator_gazebo_plugin" filename="libsimulator_gazebo_plugin.so">
+      <baseLinkName>root_link</baseLinkName>
+      <frontLeftSteeringJointName>wheel_fl_steer_joint</frontLeftSteeringJointName>
+      <frontRightSteeringJointName>wheel_fr_steer_joint</frontRightSteeringJointName>
+      <rearLeftMotorJointName>wheel_rl_joint</rearLeftMotorJointName>
+      <rearRightMotorJointName>wheel_rr_joint</rearRightMotorJointName>
+    </plugin>
   </gazebo>
 
-  <joint name="caster_joint" type="fixed">
-    <parent link="base_link" />
-    <child link="front_caster" />
-    <origin xyz="${caster_xoff} 0.0 ${-(base_height/2)}" rpy="0 0 0" />
-  </joint>
+  <!-- *********************** GPS SETUP **********************************  -->
+  <gazebo>
+    <plugin name="hector_gazebo_plugins" filename="libhector_gazebo_ros_gps.so">
+      <bodyName>base_link</bodyName>
+      <useWorldSphericalCoordinates>true</useWorldSphericalCoordinates>
+      <offset>0.0 0.0 0.0</offset>
+      <drift>0.0 0.0 0.0</drift>
+      <driftFrequency>0.0 0.0 0.0</driftFrequency>
+      <gaussianNoise>0.0 0.0 0.0</gaussianNoise>
+      <scaleError>1.0 1.0 1.0</scaleError>
+    </plugin>
+  </gazebo>
 
   <!-- *********************** IMU SETUP *********************************  -->
   <!-- Each sensor must be attached to a link.                              -->
@@ -188,13 +208,11 @@
 
     <xacro:box_inertia m="0.1" w="0.1" d="0.1" h="0.1" />
   </link>
-
   <joint name="imu_joint" type="fixed">
     <parent link="base_link" />
     <child link="imu_link" />
     <origin xyz="0 0 0.01" />
   </joint>
-
   <gazebo reference="imu_link">
     <gravity>true</gravity>
     <sensor name="imu" type="imu">
@@ -276,7 +294,6 @@
 
   <!-- *********************** LIDAR SETUP **********************************  -->
   <link name="lidar_link">
-
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <mass value="0.125" />
@@ -296,20 +313,17 @@
         <cylinder radius="0.0508" length="0.75" />
       </geometry>
     </visual>
-
   </link>
-
   <joint name="lidar_joint" type="fixed">
     <parent link="base_link" />
     <child link="lidar_link" />
     <origin xyz="0.215 0.0 0.30" rpy="0 0 0" />
   </joint>
-
   <gazebo reference="lidar_link">
     <!-- see https://github.com/MURDriverless/ouster_example -->
     <sensor name="ouster_os1_32" type="ray">
       <always_on>true</always_on>
-      <visualize>true</visualize>
+      <visualize>false</visualize>
       <pose>0.0 0 0.0 0 0 0</pose>
       <update_rate>15</update_rate>
       <ray>
@@ -342,50 +356,6 @@
       </plugin>
     </sensor>
     <material>Gazebo/Purple</material>
-  </gazebo>
-
-  <!-- *********************** WHEEL ODOMETRY ***************************    -->
-  <gazebo>
-    <plugin name="two_wheeled_robot_diff_drive" filename="libgazebo_ros_diff_drive.so">
-
-      <update_rate>30</update_rate>
-
-      <!-- wheels -->
-      <left_joint>drivewhl_l_joint</left_joint>
-      <right_joint>drivewhl_r_joint</right_joint>
-
-      <!-- kinematics -->
-      <wheel_separation>0.52</wheel_separation>
-      <wheel_diameter>0.28</wheel_diameter>
-
-      <!-- limits -->
-      <max_wheel_torque>20</max_wheel_torque>
-      <max_wheel_acceleration>1.0</max_wheel_acceleration>
-
-      <!-- Receive velocity commands on this ROS topic -->
-      <command_topic>cmd_vel</command_topic>
-
-      <!-- output -->
-      <!-- When false, publish no wheel odometry data to a ROS topic -->
-      <publish_odom>true</publish_odom>
-
-      <!-- When true, publish coordinate transform from odom to base_footprint -->
-      <!-- I usually use the robot_localization package to publish this transform -->
-      <publish_odom_tf>false</publish_odom_tf>
-
-      <!-- When true, publish coordinate transform from base_link to the wheels -->
-      <!-- The robot_state_publisher package is often used to publish this transform -->
-      <publish_wheel_tf>true</publish_wheel_tf>
-
-      <odometry_topic>odom</odometry_topic>
-      <odometry_frame>odom</odometry_frame>
-      <robot_base_frame>base_link</robot_base_frame>
-
-      <odometry_source>1</odometry_source>
-      <ros>
-        <remapping>odom:=wheel/odometry</remapping>
-      </ros>
-    </plugin>
   </gazebo>
 
 </robot>
