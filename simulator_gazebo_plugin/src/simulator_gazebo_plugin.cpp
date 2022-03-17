@@ -26,7 +26,7 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
   auto physicsEngine = world_->Physics();
   physicsEngine->SetParam("friction_model", std::string{"cone_model"});
 
-  link = model_->GetLink("base_link");
+  //link = model_->GetLink("base_link");
 
   // Get robot namespace if one exists
   if (sdf->HasElement("robotNamespace")) {
@@ -37,8 +37,8 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
   ros_node_ = gazebo_ros::Node::Get(sdf);
   RCLCPP_INFO(ros_node_->get_logger(), "\033[31mLoading Gokart Gazebo Plugin\033[0m");
 
-  ground_truth_pub = ros_node_->create_publisher<geometry_msgs::msg::Pose>("/ground_truth/pose", 10);
-  ground_truth_twist_pub = ros_node_->create_publisher<geometry_msgs::msg::Twist>("/ground_truth/twist", 10);
+  /*ground_truth_pub = ros_node_->create_publisher<geometry_msgs::msg::Pose>("/ground_truth/pose", 10);
+  ground_truth_twist_pub = ros_node_->create_publisher<geometry_msgs::msg::Twist>("/ground_truth/twist", 10);*/
 
   control_command_sub_ = ros_node_->create_subscription<ControlCommand>(
     "/control_cmd",
@@ -113,12 +113,12 @@ void GokartGazeboPlugin::Update()
   //ignition::math::Pose3d pose = link->WorldPose();
 
   //grond_truth_msg.position = link->WorldPose();
-  ignition::math::Pose3d pose = link->WorldPose();
+  /*ignition::math::Pose3d pose = link->WorldPose();
   grond_truth_msg.position.x = pose.Pos().X();
   grond_truth_msg.position.y = pose.Pos().Y();
   grond_truth_msg.position.z = pose.Pos().Z();
   
-  ground_truth_pub->publish(grond_truth_msg);
+  ground_truth_pub->publish(grond_truth_msg);*/
 
   //ground_truth_twist_pub
 
