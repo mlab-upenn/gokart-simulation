@@ -5,7 +5,7 @@
 
   <!-- ****************** ROBOT CONSTANTS *******************************  -->
   <!-- Define the size of the robot's main chassis in meters -->
-  <xacro:property name="base_width" value="0.85" />
+  <xacro:property name="base_width" value="0.95" />
   <xacro:property name="base_length" value="1.05" />
   <xacro:property name="base_height" value="0.015" />
 
@@ -13,26 +13,20 @@
   <xacro:property name="wheel_radius" value="0.1397" />
   <xacro:property name="wheel_width" value="0.09525" /> <!-- 0.1905 -->
 
-  <!-- x-axis points forward, y-axis points to left, z-axis points upwards -->
-  <!-- Define the gap between the wheel and chassis along y-axis in meters -->
-  <xacro:property name="wheel_ygap" value="0.035" />
+  <xacro:property name="steering_hinge_offset" value="0.02" />
 
-  <!-- Position the wheels along the z-axis -->
-  <xacro:property name="wheel_zoff" value="0" />
 
-  <!-- Position the wheels along the x-axis -->
-  <xacro:property name="wheel_xoff" value="0.525" />
 
-  <link name="root_link"></link>
+  <link name="base_link"></link>
 
-  <joint name="root_joint" type="fixed">
-    <parent link="root_link" />
-    <child link="base_link" />
-    <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+  <joint name="body_frame_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="body_frame_link" />
+    <origin xyz="0.525 0.0 0.0" rpy="0 0 0" />
   </joint>
 
   <!-- ********************** ROBOT BASE *********************************  -->
-  <link name="base_link">
+  <link name="body_frame_link">
     <visual>
       <origin xyz="-0.525 0 -0.015" rpy="0 0 0" />
       <geometry>
@@ -45,33 +39,20 @@
 
     <collision>
       <geometry>
-        <box size="${base_length} ${base_width} ${base_height}" />
+        <box size="${base_length} ${base_width-steering_hinge_offset-0.15} ${base_height}" />
       </geometry>
     </collision>
 
-    <xacro:box_inertia m="15.0" w="${base_width}" d="${base_length}" h="${base_height}" />
+    <xacro:box_inertia m="15.0" w="${base_width}" d="${base_length-steering_hinge_offset}" h="${base_height}" />
   </link>
 
-  <gazebo reference="base_link">
+
+  <gazebo reference="body_frame_link">
     <material>Gazebo/Red</material>
   </gazebo>
 
-
-  <!-- ****************** ROBOT BASE FOOTPRINT ***************************  -->
-  <!-- Define the center of the main robot chassis projected on the ground -->
-  <link name="base_footprint">
-    <xacro:box_inertia m="0" w="0" d="0" h="0" />
-  </link>
-
-  <!-- The base footprint of the robot is located underneath the chassis -->
-  <joint name="base_joint" type="fixed">
-    <parent link="base_link" />
-    <child link="base_footprint" />
-    <origin xyz="0.0 0.0 ${-(wheel_radius+wheel_zoff)}" rpy="0 0 0" />
-  </joint>
-
   <!-- *********************** DRIVE WHEELS ******************************  -->
-  <xacro:macro name="wheel" params="prefix x_reflect y_reflect">
+  <xacro:macro name="wheel" params="prefix y_reflect ">
     <link name="${prefix}_link">
       <visual>
         <origin xyz="0 0.09525 0" rpy="${pi/2} 0 0" />
@@ -100,13 +81,14 @@
     <joint name="${prefix}_joint" type="continuous">
       <parent link="base_link" />
       <child link="${prefix}_link" />
-      <origin xyz="${x_reflect*wheel_xoff} ${y_reflect*(base_width/2+wheel_ygap)} ${-wheel_zoff}" rpy="0 0 0" />
+      <origin xyz="0 ${y_reflect*(base_width/2)} 0" rpy="0 0 0" />
       <axis xyz="0 1 0" />
     </joint>
   </xacro:macro>
 
+
   <!-- *********************** STEER WHEELS ******************************  -->
-  <xacro:macro name="steer_wheel" params="prefix x_reflect y_reflect">
+  <xacro:macro name="steer_wheel" params="prefix y_reflect">
     <!-- Steer hinge -->
     <link name="${prefix}_steer_link">
       <xacro:cylinder_inertia m="0.1" r="${wheel_radius}" h="${wheel_width}" />
@@ -118,7 +100,7 @@
     <joint name="${prefix}_steer_joint" type="continuous">
       <parent link="base_link" />
       <child link="${prefix}_steer_link" />
-      <origin xyz="${x_reflect*wheel_xoff} ${y_reflect*(base_width/2+wheel_ygap)} ${-wheel_zoff}" rpy="0 0 0" />
+      <origin xyz="${base_length} ${y_reflect*(base_width/2-steering_hinge_offset)} 0" rpy="0 0 0" />
       <axis xyz="0 0 1" />
     </joint>
 
@@ -151,26 +133,25 @@
     <joint name="${prefix}_joint" type="continuous">
       <parent link="${prefix}_steer_link" />
       <child link="${prefix}_link" />
-      <origin xyz="0 ${y_reflect*0.02} 0" rpy="0 0 0" />
+      <origin xyz="0 ${y_reflect*steering_hinge_offset} 0" rpy="0 0 0" />
       <axis xyz="0 1 0" />
     </joint>
   </xacro:macro>
 
+
   <!-- Instantiate two wheels using the macro we just made through the
        xacro:wheel tags. We also define the parameters to have one wheel
        on both sides at the back of our robot (i.e. x_reflect=-1). -->
-  <xacro:wheel prefix="wheel_rl" x_reflect="-1" y_reflect="1" />
-  <xacro:wheel prefix="wheel_rr" x_reflect="-1" y_reflect="-1" />
+  <xacro:wheel prefix="wheel_rl" y_reflect="1" />
+  <xacro:wheel prefix="wheel_rr" y_reflect="-1" />
 
-  <xacro:steer_wheel prefix="wheel_fl" x_reflect="1" y_reflect="1" />
-  <xacro:steer_wheel prefix="wheel_fr" x_reflect="1" y_reflect="-1" />
-
-  <!-- plugins -->
+  <xacro:steer_wheel prefix="wheel_fl" y_reflect="1" />
+  <xacro:steer_wheel prefix="wheel_fr" y_reflect="-1" />
 
   <!-- *********************** ACKERMANN CONTROL **********************************  -->
   <gazebo>
     <plugin name="simulator_gazebo_plugin" filename="libsimulator_gazebo_plugin.so">
-      <baseLinkName>root_link</baseLinkName>
+      <baseLinkName>base_link</baseLinkName>
       <frontLeftSteeringJointName>wheel_fl_steer_joint</frontLeftSteeringJointName>
       <frontRightSteeringJointName>wheel_fr_steer_joint</frontRightSteeringJointName>
       <rearLeftMotorJointName>wheel_rl_joint</rearLeftMotorJointName>
@@ -211,7 +192,7 @@
   <joint name="imu_joint" type="fixed">
     <parent link="base_link" />
     <child link="imu_link" />
-    <origin xyz="0 0 0.01" />
+    <origin xyz="0.5 0 0.01" />
   </joint>
   <gazebo reference="imu_link">
     <gravity>true</gravity>
@@ -317,7 +298,7 @@
   <joint name="lidar_joint" type="fixed">
     <parent link="base_link" />
     <child link="lidar_link" />
-    <origin xyz="0.215 0.0 0.30" rpy="0 0 0" />
+    <origin xyz="0.715 0.0 0.30" rpy="0 0 0" />
   </joint>
   <gazebo reference="lidar_link">
     <!-- see https://github.com/MURDriverless/ouster_example -->
