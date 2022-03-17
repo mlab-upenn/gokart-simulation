@@ -16,6 +16,7 @@ find_package(gazebo_ros REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(simulator_msgs REQUIRED)
+find_package(geometry_msgs)
 
 add_library(simulator_gazebo_plugin SHARED src/simulator_gazebo_plugin.cpp)
 
@@ -27,7 +28,8 @@ ament_target_dependencies(simulator_gazebo_plugin
   "gazebo_ros"
   "rclcpp"
   "sensor_msgs"
-  "simulator_msgs")
+  "simulator_msgs"
+  "geometry_msgs")
 
 install(TARGETS
   simulator_gazebo_plugin

@@ -26,6 +26,7 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
   auto physicsEngine = world_->Physics();
   physicsEngine->SetParam("friction_model", std::string{"cone_model"});
 
+  link = model_->GetLink("base_link");
 
   // Get robot namespace if one exists
   if (sdf->HasElement("robotNamespace")) {
@@ -35,6 +36,9 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
   // Set up ROS node and subscribers and publishers
   ros_node_ = gazebo_ros::Node::Get(sdf);
   RCLCPP_INFO(ros_node_->get_logger(), "\033[31mLoading Gokart Gazebo Plugin\033[0m");
+
+  ground_truth_pub = ros_node_->create_publisher<geometry_msgs::msg::Pose>("/ground_truth/pose", 10);
+  ground_truth_twist_pub = ros_node_->create_publisher<geometry_msgs::msg::Twist>("/ground_truth/twist", 10);
 
   control_command_sub_ = ros_node_->create_subscription<ControlCommand>(
     "/control_cmd",
@@ -103,6 +107,23 @@ void GokartGazeboPlugin::Update()
     return;
   }
 
+
+  //ground_truth_pub
+
+  //ignition::math::Pose3d pose = link->WorldPose();
+
+  //grond_truth_msg.position = link->WorldPose();
+  ignition::math::Pose3d pose = link->WorldPose();
+  grond_truth_msg.position.x = pose.Pos().X();
+  grond_truth_msg.position.y = pose.Pos().Y();
+  grond_truth_msg.position.z = pose.Pos().Z();
+  
+  ground_truth_pub->publish(grond_truth_msg);
+
+  //ground_truth_twist_pub
+
+
+
   auto dt = (cur_time - last_sim_time_).Double();
 
   // Compute pid for speed
@@ -146,6 +167,8 @@ void GokartGazeboPlugin::Update()
   front_right_steering.joint_->SetForce(0, force_front_right_steer);
 
   // RCLCPP_INFO(ros_node_->get_logger(), "\033[31m" + std::to_string(cur_time.sec) + "  " + std::to_string(rear_left_motor.joint_->GetVelocity(0)) + "  " + std::to_string(rear_right_motor.joint_->GetVelocity(0)) + "\033[0m");
+
+
 
   last_sim_time_ = cur_time;
 }

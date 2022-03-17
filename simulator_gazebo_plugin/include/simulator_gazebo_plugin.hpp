@@ -20,6 +20,8 @@
 #include <rclcpp/rclcpp.hpp>
 #include <simulator_msgs/msg/control_command.hpp>
 #include <simulator_gazebo_joint.hpp>
+#include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/twist.hpp>
 
 //mx_joint_controller_msgs
 
@@ -42,10 +44,12 @@ private:
 
   gazebo::physics::ModelPtr model_;
   gazebo::physics::WorldPtr world_;
+  gazebo::physics::LinkPtr link;
 
   gazebo::common::Time last_sim_time_;
   gazebo::common::Time last_update_time_;
   double update_period_ms_;
+
 
   gazebo::event::ConnectionPtr update_connection_;
 
@@ -61,6 +65,9 @@ private:
 
   rclcpp::Node::SharedPtr ros_node_;
   rclcpp::Subscription<ControlCommand>::SharedPtr control_command_sub_;
+  rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr ground_truth_pub;
+  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr ground_truth_twist_pub;
+  geometry_msgs::msg::Pose grond_truth_msg = geometry_msgs::msg::Pose();
 };
 
 }
