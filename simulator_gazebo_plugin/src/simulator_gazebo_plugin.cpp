@@ -85,6 +85,8 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
   rear_right_motor.SetJoint(rr_motor_joint_name_, 4.8, 2.8, 0.0);
   rear_right_motor.joint_ = model_->GetJoint(rr_motor_joint_name_);
 
+  // RCLCPP_INFO(ros_node_->get_logger(), red("Wheel radius: ") + rear_right_motor.joint_->GetChild()->GetSDF());
+
   // Hook into simulation update loop
   update_connection_ =
     gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&GokartGazeboPlugin::Update, this));

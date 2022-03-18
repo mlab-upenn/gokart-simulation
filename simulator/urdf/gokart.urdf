@@ -9,14 +9,14 @@
   <xacro:property name="base_length" value="1.05" />
   <xacro:property name="base_height" value="0.015" />
 
-  <!-- Define the shape of the robot's two back wheels in meters -->
+  <!-- Define the shape of the car's wheel in meters -->
   <xacro:property name="wheel_radius" value="0.1397" />
   <xacro:property name="wheel_width" value="0.09525" /> <!-- 0.1905 -->
 
+  <!-- Define distance from the wheel to the steering hinge  -->
   <xacro:property name="steering_hinge_offset" value="0.02" />
 
-
-
+  <!-- Definition of robot's base_link -->
   <link name="base_link"></link>
 
   <joint name="body_frame_joint" type="fixed">
@@ -25,7 +25,7 @@
     <origin xyz="0.525 0.0 0.0" rpy="0 0 0" />
   </joint>
 
-  <!-- ********************** ROBOT BASE *********************************  -->
+  <!-- ********************** ROBOT BOdY *********************************  -->
   <link name="body_frame_link">
     <visual>
       <origin xyz="-0.525 0 -0.015" rpy="0 0 0" />
