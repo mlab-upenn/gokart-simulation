@@ -1,0 +1,11 @@
+/**:
+  ros__parameters:
+    velocity:
+      step: 0.8
+      min: -8.0
+      max: 8.0
+
+    steering_angle:
+      step: 0.4
+      min: -1.2
+      max: 1.2
