@@ -30,7 +30,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file://meshes/cube.dae</uri>
+              <uri>file://meshes/track-svg-python.dae</uri>
             </mesh>
             <!--<plane>
               <normal>0 0 1</normal>
@@ -58,7 +58,7 @@
           <!--<cast_shadows>0</cast_shadows>-->
           <geometry>
             <mesh>
-              <uri>file://meshes/cube.dae</uri>
+              <uri>file://meshes/track-svg-python.dae</uri>
             </mesh>
           </geometry>
           <material>
