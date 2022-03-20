@@ -26,7 +26,7 @@ def generate_launch_description():
     # Pose where we want to spawn the robot
     spawn_x_val = '54.93482898'
     spawn_y_val = '45.36219518'
-    spawn_z_val = '0.0'
+    spawn_z_val = '0.17'
     spawn_yaw_val = '0'
 
     # Set the path to different files and folders.
