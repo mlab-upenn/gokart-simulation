@@ -30,7 +30,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file://meshes/track-svg-python.dae</uri>
+              <uri>file://meshes/track/track-svg-python.dae</uri>
             </mesh>
             <!--<plane>
               <normal>0 0 1</normal>
@@ -58,7 +58,7 @@
           <!--<cast_shadows>0</cast_shadows>-->
           <geometry>
             <mesh>
-              <uri>file://meshes/track-svg-python.dae</uri>
+              <uri>file://meshes/track/track-svg-python.dae</uri>
             </mesh>
           </geometry>
           <material>
@@ -76,16 +76,19 @@
       </link>
     </model>
 
-    <!-- Ground plane -->
-    <model name='ground_plane'>
+    <!-- Outside ground plane -->
+    <model name='outside_ground_plane'>
       <static>1</static>
-      <link name='link_ground'>
+      <link name='link_outside_ground'>
         <collision name='collision'>
           <geometry>
-            <plane>
+            <mesh>
+              <uri>file://meshes/track/outside.dae</uri>
+            </mesh>
+            <!--<plane>
               <normal>0 0 1</normal>
               <size>1000 1000</size>
-            </plane>
+            </plane>-->
           </geometry>
           <surface>
             <friction>
@@ -107,10 +110,71 @@
         <visual name='visual'>
           <!--<cast_shadows>0</cast_shadows>-->
           <geometry>
-            <plane>
+            <mesh>
+              <uri>file://meshes/track/outside.dae</uri>
+            </mesh>
+           <!--<plane>
               <normal>0 0 1</normal>
               <size>1000 1000</size>
-            </plane>
+            </plane>-->
+          </geometry>
+          <material>
+            <script>
+              <!-- <uri>file://materials/scripts/gokart.material</uri> -->
+              <!-- <name>GoKart/Grass1</name> -->
+              <!-- <name>GoKart/Grass2</name> -->
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grass</name>
+            </script>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+
+    <!-- Inside ground plane -->
+    <model name='inside_ground_plane'>
+      <static>1</static>
+      <link name='link_inside_ground'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>file://meshes/track/inside.dae</uri>
+            </mesh>
+            <!--<plane>
+              <normal>0 0 1</normal>
+              <size>1000 1000</size>
+            </plane>-->
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>100</mu>
+                <mu2>50</mu2>
+              </ode>
+              <torsional>
+                <ode />
+              </torsional>
+            </friction>
+            <contact>
+              <ode />
+            </contact>
+            <bounce />
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='visual'>
+          <!--<cast_shadows>0</cast_shadows>-->
+          <geometry>
+            <mesh>
+              <uri>file://meshes/track/inside.dae</uri>
+            </mesh>
+           <!--<plane>
+              <normal>0 0 1</normal>
+              <size>1000 1000</size>
+            </plane>-->
           </geometry>
           <material>
             <script>
@@ -167,8 +231,14 @@
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
-        <link name='link_ground'>
-          <pose>0 0 0 -0.001 -0 0</pose>
+        <link name='link_outside_ground'>
+          <pose>0 0 0 0 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+        <link name='link_inside_ground'>
+          <pose>0 0 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
