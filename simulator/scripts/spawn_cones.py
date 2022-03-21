@@ -32,39 +32,30 @@ class ConeSpawner(Node):
                 )],
                 description='distance between two consecutive cones [m]',
             ),
+            value=5.0,
         )
 
-        left_wall_gps = load_wall(
-            get_package_share_directory('simulator') + '/models/purdue_racetrack/gps_data/purdue_left.csv'
-        )
-        right_wall_gps = load_wall(
-            get_package_share_directory('simulator') + '/models/purdue_racetrack/gps_data/purdue_right.csv'
-        )
-        base_point_gps_ = [-86.945105, 40.437265, 0.0]
-
-        radius_north_, radius_east_ = get_earth_radius_at_latitude(base_point_gps_[1])
-
-        self.left_wall_xyz = convert_points(
-            points_gps=left_wall_gps,
-            base_point_gps=base_point_gps_,
-            radius_north=radius_north_,
-            radius_east=radius_east_,
-            num_points=None,
-            visualize=False,
+        self.declare_parameter(
+            name='gnss_data_paths',
+            descriptor=ParameterDescriptor(
+                type=ParameterType.PARAMETER_STRING_ARRAY,
+                description='absolute paths to gnss .csv data',
+            ),
+            value=[
+                get_package_share_directory('simulator') + '/models/purdue_racetrack/gps_data/purdue_left.csv',
+                get_package_share_directory('simulator') + '/models/purdue_racetrack/gps_data/purdue_right.csv',
+            ],
         )
 
-        self.right_wall_xyz = convert_points(
-            points_gps=right_wall_gps,
-            base_point_gps=base_point_gps_,
-            radius_north=radius_north_,
-            radius_east=radius_east_,
-            num_points=None,
-            visualize=False,
+        self.declare_parameter(
+            name='gnss_origin_point',
+            descriptor=ParameterDescriptor(
+                type=ParameterType.PARAMETER_DOUBLE_ARRAY,
+                description='array of three numbers [longitude, latitude, elevation], this point will be '
+                            'transformed to the origin [0,0,0] in the cartesian coordinate system in Gazebo simulation',
+            ),
+            value=[-86.945105, 40.437265, 0.0],
         )
-
-        self.spawned_cones_id = []
-
-        # self.get_parameter('steering_angle.min').value
 
         self.gazebo_spawner_cli = self.create_client(SpawnEntity, 'spawn_entity')
 
@@ -72,15 +63,10 @@ class ConeSpawner(Node):
             self.get_logger().info('service not available, trying again...')
         self.get_logger().info('Connected to the service SpawnEntity')
 
-        with open(get_package_share_directory('simulator') + '/models/cone/model.sdf', 'r') as file:
-            self.cone_xml = file.read()
-
-        # Define request and unchanging parameters
+        # Init request
         self.spawn_entity_req = SpawnEntity.Request()
-        # self.spawn_entity_req.xml = self.cone_xml
         self.spawn_entity_req.reference_frame = 'map'
         self.spawn_entity_req.robot_namespace = 'cones'
-        self.spawn_entity_req.name = 'cones'
         self.spawn_entity_req.initial_pose.position.x = 0.0
         self.spawn_entity_req.initial_pose.position.y = 0.0
         self.spawn_entity_req.initial_pose.position.z = 0.0
@@ -89,8 +75,38 @@ class ConeSpawner(Node):
         self.spawn_entity_req.initial_pose.orientation.z = 0.0
         self.spawn_entity_req.initial_pose.orientation.w = 0.0
 
-        left_cones_pose = self.get_cones_pose(5.0, self.left_wall_xyz)
-        self.spawn_cones(left_cones_pose)
+        self.gnss_data_paths = []
+        self.distance_between_cones = 0.0
+        self.gnss_origin_point = [0, 0, 0]
+
+        self.update_parameters()
+        self.spawn_cones()
+
+    def update_parameters(self):
+        self.gnss_data_paths = self.get_parameter('gnss_data_paths').value
+        self.distance_between_cones = self.get_parameter('distance_between_cones').value
+        self.gnss_origin_point = self.get_parameter('gnss_origin_point').value
+
+    def spawn_cones(self):
+        self.radius_north_, self.radius_east_ = get_earth_radius_at_latitude(self.gnss_origin_point[1])
+        for i, path in enumerate(self.gnss_data_paths):
+            loaded_gnss_points = load_wall(path)
+            points_cartesian = convert_points(
+                points_gps=loaded_gnss_points,
+                base_point_gps=self.gnss_origin_point,
+                radius_north=self.radius_north_,
+                radius_east=self.radius_east_,
+                num_points=None,
+                visualize=False,
+            )
+            cone_xml = ''
+            with open(path, 'r') as file:
+                cone_xml = file.read()
+            cones_pose = self.get_cones_pose(self.distance_between_cones, points_cartesian)
+            self.spawn_entity_req.name = 'cones' + str(i)
+            self.send_spawn_request(cones_pose)
+
+
 
     def get_cones_pose(self, distance_between_cones: float, border_points: np.array) -> List[Tuple[Point, float]]:
         border_length = np.sum(np.sqrt(
@@ -116,7 +132,7 @@ class ConeSpawner(Node):
             cones_poses.append((cone_position, yaw))
         return cones_poses
 
-    def spawn_cones(self, cones_pose: List[Tuple[Point, float]]) -> None:
+    def send_spawn_request(self, cones_pose: List[Tuple[Point, float]]) -> None:
 
         cones_xml = '''<?xml version="1.0"?>
 <?xml-model href="http://sdformat.org/schemas/root.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
@@ -146,7 +162,8 @@ class ConeSpawner(Node):
         If type or constraints validation fails, this callback will not be called at all.
         If this callback returns SetParametersResult(successful=False), the values will not be set.
         """
-
+        # self.update_parameters()
+        # self.spawn_cones()
         return SetParametersResult(successful=True)
 
 
