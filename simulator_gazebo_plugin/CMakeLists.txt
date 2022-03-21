@@ -32,14 +32,6 @@ ament_target_dependencies(simulator_gazebo_plugin
   "simulator_msgs"
   "nav_msgs")
 
-# Install Python modules
-# ament_python_install_package(${PROJECT_NAME})
-# Install Python executables
-install(PROGRAMS
-  src/spawn_cones.py
-  DESTINATION lib/${PROJECT_NAME}
-)
-
 install(TARGETS
   simulator_gazebo_plugin
   DESTINATION share/${PROJECT_NAME})

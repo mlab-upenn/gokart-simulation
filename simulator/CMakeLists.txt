@@ -28,6 +28,11 @@ endif()
 #
 ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/${PROJECT_NAME}.sh.in")
 
+install(PROGRAMS
+        scripts/gen_racetrack.py
+        scripts/spawn_cones.py
+        DESTINATION lib/${PROJECT_NAME})
+
 # ament package generation and installing
 ament_auto_package(INSTALL_TO_SHARE
   config
