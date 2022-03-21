@@ -1,0 +1,21 @@
+# see https://github.com/ros-drivers/joystick_drivers/tree/foxy-devel/joy
+joy_node:
+  ros__parameters:
+    # device_id: 0
+    # device_name: "''"  # takes precedence over device_id
+    deadzone: 0.05
+    autorepeat_rate: 0.0
+    sticky_buttons: false
+    coalesce_interval_ms: 1
+joy_teleop_node:
+  ros__parameters:
+    velocity:
+      min: -8.0  # m/s
+      max: 8.0  # m/s
+    steering_angle:
+      min: -1.2  # rad
+      max: 1.2  # rad
+    axes:
+      forward: 2
+      reverse: 5
+      steering: 0
