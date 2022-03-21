@@ -1,0 +1,13 @@
+/**:
+  ros__parameters:
+    velocity:
+      # when the UP/DOWN key is pressed, velocity is computed using dt and acceleration
+      acceleration: 8.0  # m/s^2
+      min: -8.0  # m/s
+      max: 8.0  # m/s
+
+    steering_angle:
+      # when the LEFT/RIGHT key is pressed, steering angle is computed using dt and angular velocity
+      angular_velocity: 1.2  # rad/s
+      min: -1.2  # rad
+      max: 1.2  # rad

@@ -28,10 +28,10 @@ class Direction(IntEnum):
             return Direction.RIGHT
 
 
-class TeleopNode(Node):
+class KeyTeleopNode(Node):
 
     def __init__(self):
-        super().__init__('teleop')
+        super().__init__('key_teleop')
 
         self.stop = False
 
@@ -109,14 +109,14 @@ class TeleopNode(Node):
         return max(min(value, max_value), min_value)
 
     def clamp_velocity(self, velocity):
-        return TeleopNode.clamp(
+        return KeyTeleopNode.clamp(
             velocity,
             self.get_parameter('velocity.min').value,
             self.get_parameter('velocity.max').value,
         )
 
     def clamp_steering_angle(self, steering_angle):
-        return TeleopNode.clamp(
+        return KeyTeleopNode.clamp(
             steering_angle,
             self.get_parameter('steering_angle.min').value,
             self.get_parameter('steering_angle.max').value,
@@ -201,7 +201,7 @@ class TeleopNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    teleop_node = TeleopNode()
+    teleop_node = KeyTeleopNode()
     try:
         rclpy.spin(teleop_node)
     except KeyboardInterrupt:

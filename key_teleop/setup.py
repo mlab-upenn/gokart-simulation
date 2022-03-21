@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'teleop'
+package_name = 'key_teleop'
 
 setup(
     name=package_name,
@@ -17,7 +17,7 @@ setup(
         ),
         (
             'share/' + package_name + '/config',
-            ['config/teleop_node.yaml']
+            ['config/key_teleop_node.yaml']
         ),
     ],
     install_requires=['setuptools'],
@@ -29,7 +29,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'teleop_node = teleop.teleop_node:main'
+            'key_teleop_node = key_teleop.key_teleop_node:main'
         ],
     },
 )
