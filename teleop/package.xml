@@ -3,8 +3,8 @@
 <package format="3">
   <name>teleop</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="rithwiku@seas.upenn.edu">rithwikugiri</maintainer>
+  <description>Keyboard teleop for the gokart implemented in Python with pynput</description>
+  <maintainer email="rithwiku@seas.upenn.edu">Rithwik Udayagiri</maintainer>
   <license>Apache License 2.0</license>
 
   <exec_depend>rclpy</exec_depend>
