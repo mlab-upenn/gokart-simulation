@@ -8,6 +8,7 @@ import numpy
 from stl import mesh
 import matplotlib.pyplot as plt
 from operator import itemgetter
+from typing import Tuple
 
 
 def load_wall(file):
@@ -178,27 +179,47 @@ def points_to_svg(left_points, right_points):
     return svg_with_path(path)
 
 
-if __name__ == '__main__':
-    # INPUT:
-    left_wall_gps = load_wall('gps.local/purdue_left.csv')
-    right_wall_gps = load_wall('gps.local/purdue_right.csv')
-    # [longitude, latitude, elevation]
-    # GNSS  after transform coordinates of map frame origin [0,0,0]
-    base_point_gps_ = [-86.945105, 40.437265, 0.0]
-
+def get_earth_radius_at_latitude(latitude: float) -> Tuple[float, float]:
     # constants for from GPS Hector plugin
     EQUATORIAL_RADIUS = 6378137.0
     FLATTENING = 1.0 / 298.257223563
     ECCENTRICITY2 = 2.0 * FLATTENING - math.pow(FLATTENING, 2.0)
 
     # calculate earth radius from GPS Hector plugin
-    base_point_latitude_ = math.radians(base_point_gps_[1])
+    base_point_latitude_ = math.radians(latitude)
     temp_ = 1.0 / (
         1.0 - ECCENTRICITY2 * math.pow(math.sin(base_point_latitude_), 2.0)
     )
     prime_vertical_radius_ = EQUATORIAL_RADIUS * math.sqrt(temp_)
-    radius_north_ = prime_vertical_radius_ * (1.0 - ECCENTRICITY2) * temp_
-    radius_east_ = prime_vertical_radius_ * math.cos(base_point_latitude_)
+    radius_north = prime_vertical_radius_ * (1.0 - ECCENTRICITY2) * temp_
+    radius_east = prime_vertical_radius_ * math.cos(base_point_latitude_)
+
+    return radius_north, radius_east
+
+
+if __name__ == '__main__':
+    # INPUT:
+    left_wall_gps = load_wall('../models/purdue_racetrack/gps_data/purdue_left.csv')
+    right_wall_gps = load_wall('../models/purdue_racetrack/gps_data/purdue_right.csv')
+    # [longitude, latitude, elevation]
+    # GNSS  after transform coordinates of map frame origin [0,0,0]
+    base_point_gps_ = [-86.945105, 40.437265, 0.0]
+
+    # constants for from GPS Hector plugin
+    # EQUATORIAL_RADIUS = 6378137.0
+    # FLATTENING = 1.0 / 298.257223563
+    # ECCENTRICITY2 = 2.0 * FLATTENING - math.pow(FLATTENING, 2.0)
+
+    # calculate earth radius from GPS Hector plugin
+    # base_point_latitude_ = math.radians(base_point_gps_[1])
+    # temp_ = 1.0 / (
+    #     1.0 - ECCENTRICITY2 * math.pow(math.sin(base_point_latitude_), 2.0)
+    # )
+    # prime_vertical_radius_ = EQUATORIAL_RADIUS * math.sqrt(temp_)
+    # radius_north_ = prime_vertical_radius_ * (1.0 - ECCENTRICITY2) * temp_
+    # radius_east_ = prime_vertical_radius_ * math.cos(base_point_latitude_)
+
+    radius_north_, radius_east_ = get_earth_radius_at_latitude(base_point_gps_[1])
 
     left_wall_xyz = convert_points(
         points_gps=left_wall_gps,
