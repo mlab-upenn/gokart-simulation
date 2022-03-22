@@ -30,7 +30,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file://meshes/track/track-svg-python.dae</uri>
+              <uri>model://purdue_racetrack/meshes/track-svg-python.dae</uri>
             </mesh>
             <!--<plane>
               <normal>0 0 1</normal>
@@ -58,7 +58,7 @@
           <!--<cast_shadows>0</cast_shadows>-->
           <geometry>
             <mesh>
-              <uri>file://meshes/track/track-svg-python.dae</uri>
+              <uri>model://purdue_racetrack/meshes/track-svg-python.dae</uri>
             </mesh>
           </geometry>
           <material>
@@ -83,7 +83,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file://meshes/track/outside.dae</uri>
+              <uri>model://purdue_racetrack/meshes/outside.dae</uri>
             </mesh>
             <!--<plane>
               <normal>0 0 1</normal>
@@ -111,9 +111,9 @@
           <!--<cast_shadows>0</cast_shadows>-->
           <geometry>
             <mesh>
-              <uri>file://meshes/track/outside.dae</uri>
+              <uri>model://purdue_racetrack/meshes/outside.dae</uri>
             </mesh>
-           <!--<plane>
+            <!--<plane>
               <normal>0 0 1</normal>
               <size>1000 1000</size>
             </plane>-->
@@ -141,7 +141,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file://meshes/track/inside.dae</uri>
+              <uri>model://purdue_racetrack/meshes/inside.dae</uri>
             </mesh>
             <!--<plane>
               <normal>0 0 1</normal>
@@ -169,9 +169,9 @@
           <!--<cast_shadows>0</cast_shadows>-->
           <geometry>
             <mesh>
-              <uri>file://meshes/track/inside.dae</uri>
+              <uri>model://purdue_racetrack/meshes/inside.dae</uri>
             </mesh>
-           <!--<plane>
+            <!--<plane>
               <normal>0 0 1</normal>
               <size>1000 1000</size>
             </plane>-->
@@ -222,29 +222,6 @@
       <real_time>0 0</real_time>
       <wall_time>1626668720 808592627</wall_time>
       <iterations>0</iterations>
-      <model name='ground_plane'>
-        <pose>0 0 0 0 -0 0</pose>
-        <scale>1 1 1</scale>
-        <link name='link_track'>
-          <pose>0 0 0 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-        <link name='link_outside_ground'>
-          <pose>0 0 0 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-        <link name='link_inside_ground'>
-          <pose>0 0 0 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-
       <light name='sun'>
         <pose>0 0 10 0 -0 0</pose>
       </light>

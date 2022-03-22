@@ -1,5 +1,6 @@
-<?xml version='1.0'?>
-<sdf version='1.7'>
+<?xml version="1.0"?>
+<?xml-model href="http://sdformat.org/schemas/root.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<sdf version="1.7">
   <model name='cone'>
     <static>true</static>
     <link name='link_0'>
@@ -24,7 +25,7 @@
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>file://meshes/Cone.stl</uri>
+            <uri>model://cone/cone.stl</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
@@ -51,7 +52,7 @@
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>file://meshes/Cone.stl</uri>
+            <uri>model://cone/cone.stl</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>

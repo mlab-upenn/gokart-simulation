@@ -144,7 +144,7 @@ def generate_launch_description():
             ('world', world),
             # ('pause', 'true'),
             # ('gdb', 'false'),
-            # ('extra_gazebo_args', '--verbose')
+            ('extra_gazebo_args', '--verbose')
         ],
     )
 
