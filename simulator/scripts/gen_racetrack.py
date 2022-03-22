@@ -9,6 +9,7 @@ from stl import mesh
 import matplotlib.pyplot as plt
 from operator import itemgetter
 from typing import Tuple
+from ament_index_python import get_package_share_directory
 
 
 def load_wall(file):
@@ -198,12 +199,19 @@ def get_earth_radius_at_latitude(latitude: float) -> Tuple[float, float]:
 
 
 if __name__ == '__main__':
-    # INPUT:
-    left_wall_gps = load_wall('../models/purdue_racetrack/gps_data/purdue_left.csv')
-    right_wall_gps = load_wall('../models/purdue_racetrack/gps_data/purdue_right.csv')
+    # INPUTS:
+    left_wall_gps = load_wall(
+        get_package_share_directory('simulator') + '/models/purdue_racetrack/gps_data/left.csv'
+    )
+    right_wall_gps = load_wall(
+        get_package_share_directory('simulator') + '/models/purdue_racetrack/gps_data/right.csv'
+    )
     # [longitude, latitude, elevation]
     # GNSS  after transform coordinates of map frame origin [0,0,0]
     base_point_gps_ = [-86.945105, 40.437265, 0.0]
+    # If program should create .stl file (primitive triangulation algorithm - does not work good enough, .svg is better)
+    create_stl_out = False
+    # END OF INPUTS
 
     # constants for from GPS Hector plugin
     # EQUATORIAL_RADIUS = 6378137.0
@@ -241,11 +249,12 @@ if __name__ == '__main__':
 
     # plt.show()
 
-    create_stl_file(
-        left_wall=left_wall_xyz,
-        right_wall=right_wall_xyz,
-        filename='gps.local/racetrack.stl',
-    )
+    if create_stl_out:
+        create_stl_file(
+            left_wall=left_wall_xyz,
+            right_wall=right_wall_xyz,
+            filename='gps.local/racetrack.stl',
+        )
 
     svg = points_to_svg(left_wall_xyz, right_wall_xyz)
     print(svg)
