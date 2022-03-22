@@ -4,7 +4,7 @@ import math
 import rclpy
 from rclpy.node import Node
 import random
-from gazebo_msgs.srv import SpawnEntity
+from gazebo_msgs.srv import SpawnEntity, DeleteEntity
 from geometry_msgs.msg import Pose, Point
 from gen_racetrack import load_wall, get_earth_radius_at_latitude, convert_points, trajectory_interpolate
 from rcl_interfaces.msg import ParameterDescriptor, ParameterType, FloatingPointRange, Parameter, SetParametersResult
@@ -19,15 +19,13 @@ class ConeSpawner(Node):
     def __init__(self):
         super().__init__('cone_spawner')
 
-        self.add_on_set_parameters_callback(self.reconfigure_callback)
-
         self.declare_parameter(
             name='distance_between_cones',
             descriptor=ParameterDescriptor(
                 type=ParameterType.PARAMETER_DOUBLE,
                 floating_point_range=[FloatingPointRange(
                     from_value=0.00,
-                    to_value=float('inf'),
+                    to_value=float(100),
                     step=0.0,
                 )],
                 description='distance between two consecutive cones [m]',
@@ -57,16 +55,20 @@ class ConeSpawner(Node):
             value=[-86.945105, 40.437265, 0.0],
         )
 
+        self.add_on_set_parameters_callback(self.reconfigure_callback)
+
         self.gazebo_spawner_cli = self.create_client(SpawnEntity, 'spawn_entity')
+        self.gazebo_deleter_cli = self.create_client(DeleteEntity, 'delete_entity')
 
         while not self.gazebo_spawner_cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, trying again...')
         self.get_logger().info('Connected to the service SpawnEntity')
 
-        # Init request
+        # Init spawn request
         self.spawn_entity_req = SpawnEntity.Request()
         self.spawn_entity_req.reference_frame = 'map'
         self.spawn_entity_req.robot_namespace = 'cones'
+        self.spawn_entity_req.name = 'cones'
         self.spawn_entity_req.initial_pose.position.x = 0.0
         self.spawn_entity_req.initial_pose.position.y = 0.0
         self.spawn_entity_req.initial_pose.position.z = 0.0
@@ -75,20 +77,37 @@ class ConeSpawner(Node):
         self.spawn_entity_req.initial_pose.orientation.z = 0.0
         self.spawn_entity_req.initial_pose.orientation.w = 0.0
 
+        # init delete request
+        self.delete_entity_req = DeleteEntity.Request()
+        self.delete_entity_req.name = 'cones'
+
         self.gnss_data_paths = []
         self.distance_between_cones = 0.0
         self.gnss_origin_point = [0, 0, 0]
 
-        self.update_parameters()
+        self.update_parameters([
+            self.get_parameter('gnss_data_paths'),
+            self.get_parameter('distance_between_cones'),
+            self.get_parameter('gnss_origin_point'),
+        ])
         self.spawn_cones()
 
-    def update_parameters(self):
-        self.gnss_data_paths = self.get_parameter('gnss_data_paths').value
-        self.distance_between_cones = self.get_parameter('distance_between_cones').value
-        self.gnss_origin_point = self.get_parameter('gnss_origin_point').value
+    def update_parameters(self, parameters: List[Parameter]) -> None:
+        # validate parameters
+        for param in parameters:
+            if param.name == 'gnss_data_paths':
+                self.gnss_data_paths = param.value
+            elif param.name == 'distance_between_cones':
+                self.distance_between_cones = param.value
+            elif param.name == 'gnss_origin_point':
+                self.gnss_origin_point = param.value
+
+
 
     def spawn_cones(self):
+        print(f'spawning cones with dist = {self.distance_between_cones}')
         self.radius_north_, self.radius_east_ = get_earth_radius_at_latitude(self.gnss_origin_point[1])
+        all_cones = []
         for i, path in enumerate(self.gnss_data_paths):
             loaded_gnss_points = load_wall(path)
             points_cartesian = convert_points(
@@ -99,14 +118,13 @@ class ConeSpawner(Node):
                 num_points=None,
                 visualize=False,
             )
-            cone_xml = ''
-            with open(path, 'r') as file:
-                cone_xml = file.read()
-            cones_pose = self.get_cones_pose(self.distance_between_cones, points_cartesian)
-            self.spawn_entity_req.name = 'cones' + str(i)
-            self.send_spawn_request(cones_pose)
 
-
+            cones = self.get_cones_pose(
+                self.distance_between_cones,
+                points_cartesian)
+            all_cones.append((path.split(sep='/')[-1].split(sep='.')[0], cones))
+        self.send_spawn_request(all_cones)
+        print("Spawning finished")
 
     def get_cones_pose(self, distance_between_cones: float, border_points: np.array) -> List[Tuple[Point, float]]:
         border_length = np.sum(np.sqrt(
@@ -117,7 +135,7 @@ class ConeSpawner(Node):
 
         cones_position = trajectory_interpolate(border_points, int_size=number_of_cones)
 
-        cones_poses = []
+        cones = []
         for i in range(len(cones_position)):
             cone_position = Point()
             cone_position.x = cones_position[i][0]
@@ -129,21 +147,21 @@ class ConeSpawner(Node):
                 cones_position[(i + 1) % len(cones_position)][0] - cones_position[i - 1][0]
             )
 
-            cones_poses.append((cone_position, yaw))
-        return cones_poses
+            cones.append((cone_position, yaw))
+        return cones
 
-    def send_spawn_request(self, cones_pose: List[Tuple[Point, float]]) -> None:
+    def send_spawn_request(self, cones_all: List[Tuple[str, List[Tuple[Point, float]]]]) -> None:
 
         cones_xml = '''<?xml version="1.0"?>
 <?xml-model href="http://sdformat.org/schemas/root.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <sdf version="1.7">
     <model name="test_track"> '''
-
-        for i, (position, yaw) in enumerate(cones_pose):
-            cones_xml += f'''       <include>
+        for name, cones in cones_all:
+            for idx, (position, yaw) in enumerate(cones):
+                cones_xml += f'''       <include>
         <uri>model://cone</uri>
         <pose>{position.x:.3f} {position.y:.3f} {position.z:.3f} 0 0 {yaw}</pose>
-        <name>cone_{i}</name>
+        <name>cone_{name}_{idx}</name>
     </include>'''
 
         cones_xml += '''    </model>
@@ -162,8 +180,11 @@ class ConeSpawner(Node):
         If type or constraints validation fails, this callback will not be called at all.
         If this callback returns SetParametersResult(successful=False), the values will not be set.
         """
-        # self.update_parameters()
-        # self.spawn_cones()
+        print(parameters)
+        self.gazebo_deleter_cli.call_async(self.delete_entity_req)
+        self.update_parameters(parameters)
+        self.spawn_cones()
+
         return SetParametersResult(successful=True)
 
 
