@@ -16,6 +16,6 @@ joy_teleop_node:
       min: -1.2  # rad
       max: 1.2  # rad
     axes:
-      forward: 2
-      reverse: 5
+      forward: 5
+      reverse: 2
       steering: 0
