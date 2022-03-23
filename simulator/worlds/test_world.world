@@ -120,11 +120,12 @@
           </geometry>
           <material>
             <script>
-              <!-- <uri>file://materials/scripts/gokart.material</uri> -->
+              <uri>model://purdue_racetrack/materials/scripts</uri>
+              <uri>model://purdue_racetrack/materials/textures</uri>
               <!-- <name>GoKart/Grass1</name> -->
-              <!-- <name>GoKart/Grass2</name> -->
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/Grass</name>
+              <name>GoKart/Grass2</name>
+              <!--<uri>file://media/materials/scripts/gazebo.material</uri>-->
+              <!--<name>Gazebo/Grass</name>-->
             </script>
           </material>
         </visual>
@@ -178,11 +179,12 @@
           </geometry>
           <material>
             <script>
-              <!-- <uri>file://materials/scripts/gokart.material</uri> -->
+               <uri>model://purdue_racetrack/materials/scripts</uri>
+               <uri>model://purdue_racetrack/materials/textures</uri>
               <!-- <name>GoKart/Grass1</name> -->
-              <!-- <name>GoKart/Grass2</name> -->
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/Grass</name>
+               <name>GoKart/Grass2</name>
+<!--              <uri>file://media/materials/scripts/gazebo.material</uri>-->
+<!--              <name>Gazebo/Grass</name>-->
             </script>
           </material>
         </visual>
