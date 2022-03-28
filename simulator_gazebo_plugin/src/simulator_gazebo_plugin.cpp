@@ -73,6 +73,29 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
       }
     });
 
+  autoware_control_command_sub_ = ros_node_->create_subscription<AutowareControlCommand>(
+    "/autoware_control_cmd", 1, [=](AutowareControlCommand::SharedPtr msg) {
+      // RCLCPP_INFO(ros_node_->get_logger(), red("Receiving new command message"));
+
+      // 0.6 rad ~ 34 deg
+      if (msg->front_wheel_angle_rad < -0.6) {
+        desired_steering_angle_ = -0.6;
+      } else if (msg->front_wheel_angle_rad > 0.6) {
+        desired_steering_angle_ = 0.6;
+      } else {
+        desired_steering_angle_ = msg->front_wheel_angle_rad;
+      }
+
+      // 20 mps = 72 kmph = 44.74 mph
+      if (msg->velocity_mps < -20) {
+        desired_velocity_ = -20;
+      } else if (msg->velocity_mps > 20) {
+        desired_velocity_ = 20;
+      } else {
+        desired_velocity_ = msg->velocity_mps;
+      }
+    });
+
   front_left_steering.SetJoint(fl_steering_joint_name_, 2.7, 0.5, 0.3);
   front_left_steering.joint_ = model_->GetJoint(fl_steering_joint_name_);
 

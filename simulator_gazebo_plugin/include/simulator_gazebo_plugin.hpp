@@ -21,6 +21,7 @@
 
 #include <nav_msgs/msg/odometry.hpp>
 #include <simulator_msgs/msg/control_command.hpp>
+#include <autoware_auto_vehicle_msgs/msg/vehicle_control_command.hpp>
 
 #include <simulator_gazebo_joint.hpp>
 
@@ -40,6 +41,7 @@ private:
   void Update();
 
   using ControlCommand = simulator_msgs::msg::ControlCommand;
+  using AutowareControlCommand = autoware_auto_vehicle_msgs::msg::VehicleControlCommand;
   using Odometry = nav_msgs::msg::Odometry;
 
   std::string base_link_name_;
@@ -67,6 +69,7 @@ private:
 
   rclcpp::Node::SharedPtr ros_node_;
   rclcpp::Subscription<ControlCommand>::SharedPtr control_command_sub_;
+  rclcpp::Subscription<AutowareControlCommand>::SharedPtr autoware_control_command_sub_;
   rclcpp::Publisher<Odometry>::SharedPtr ground_truth_pub_;
 
   Odometry ground_truth_msg_ = Odometry();
