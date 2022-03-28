@@ -67,6 +67,10 @@ private:
   double desired_steering_angle_;
   double desired_velocity_;
 
+  double max_velocity_forward_ = 20; // 20 mps = 72 kmph = 44.74 mph
+  double max_velocity_backward_ = -20; // 20 mps = 72 kmph = 44.74 mph
+  double max_steering_angle_ = 0.6; // 0.6 rad ~ 34 deg
+
   rclcpp::Node::SharedPtr ros_node_;
   rclcpp::Subscription<ControlCommand>::SharedPtr control_command_sub_;
   rclcpp::Subscription<AutowareControlCommand>::SharedPtr autoware_control_command_sub_;
