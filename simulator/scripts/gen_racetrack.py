@@ -147,6 +147,7 @@ def create_stl_file(left_wall, right_wall, filename):
 
 
 # TODO: replace hardcoded size
+# Note: only mm (millimeters) works as the absolute unit when importing to Blender
 def svg_with_path(path: str) -> str:
     xml = f'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
@@ -181,56 +182,51 @@ def points_to_svg(left_points, right_points):
 
 
 def get_earth_radius_at_latitude(latitude: float) -> Tuple[float, float]:
-    # constants for from GPS Hector plugin
+    # constants from the GPS Hector plugin
     EQUATORIAL_RADIUS = 6378137.0
     FLATTENING = 1.0 / 298.257223563
     ECCENTRICITY2 = 2.0 * FLATTENING - math.pow(FLATTENING, 2.0)
 
-    # calculate earth radius from GPS Hector plugin
-    base_point_latitude_ = math.radians(latitude)
-    temp_ = 1.0 / (
-        1.0 - ECCENTRICITY2 * math.pow(math.sin(base_point_latitude_), 2.0)
+    # calculate earth radius (same way as in the GPS Hector plugin)
+    latitude_rad = math.radians(latitude)
+    temp = 1.0 / (
+        1.0 - ECCENTRICITY2 * math.pow(math.sin(latitude_rad), 2.0)
     )
-    prime_vertical_radius_ = EQUATORIAL_RADIUS * math.sqrt(temp_)
-    radius_north = prime_vertical_radius_ * (1.0 - ECCENTRICITY2) * temp_
-    radius_east = prime_vertical_radius_ * math.cos(base_point_latitude_)
+    prime_vertical_radius_ = EQUATORIAL_RADIUS * math.sqrt(temp)
+    radius_north = prime_vertical_radius_ * (1.0 - ECCENTRICITY2) * temp
+    radius_east = prime_vertical_radius_ * math.cos(latitude_rad)
 
     return radius_north, radius_east
 
 
 if __name__ == '__main__':
     # INPUTS:
-    left_wall_gps = load_wall(
-        get_package_share_directory('simulator') + '/models/purdue_racetrack/gps_data/left.csv'
+    # GNSS racetrack boundary points
+    left_wall_gps_ = load_wall(
+        get_package_share_directory('simulator')
+        + '/models/purdue_racetrack/gps_data/left.csv'
     )
-    right_wall_gps = load_wall(
-        get_package_share_directory('simulator') + '/models/purdue_racetrack/gps_data/right.csv'
+    right_wall_gps_ = load_wall(
+        get_package_share_directory('simulator')
+        + '/models/purdue_racetrack/gps_data/right.csv'
     )
+
     # [longitude, latitude, elevation]
-    # GNSS  after transform coordinates of map frame origin [0,0,0]
+    # GNSS coordinates that corresponds to the XYZ coordinates origin point [0,0,0]
     base_point_gps_ = [-86.945105, 40.437265, 0.0]
-    # If program should create .stl file (primitive triangulation algorithm - does not work good enough, .svg is better)
-    create_stl_out = False
+
+    # If program should create an STL file (using a primitive tesselation algorithm).
+    # Does not work good enough. It is better to create an SVG, import it to Blender,
+    # and use its tesselation algorithm for STL/DAE creation.
+    create_stl_out_ = False
     # END OF INPUTS
 
-    # constants for from GPS Hector plugin
-    # EQUATORIAL_RADIUS = 6378137.0
-    # FLATTENING = 1.0 / 298.257223563
-    # ECCENTRICITY2 = 2.0 * FLATTENING - math.pow(FLATTENING, 2.0)
+    radius_north_, radius_east_ = get_earth_radius_at_latitude(
+        latitude=base_point_gps_[1],
+    )
 
-    # calculate earth radius from GPS Hector plugin
-    # base_point_latitude_ = math.radians(base_point_gps_[1])
-    # temp_ = 1.0 / (
-    #     1.0 - ECCENTRICITY2 * math.pow(math.sin(base_point_latitude_), 2.0)
-    # )
-    # prime_vertical_radius_ = EQUATORIAL_RADIUS * math.sqrt(temp_)
-    # radius_north_ = prime_vertical_radius_ * (1.0 - ECCENTRICITY2) * temp_
-    # radius_east_ = prime_vertical_radius_ * math.cos(base_point_latitude_)
-
-    radius_north_, radius_east_ = get_earth_radius_at_latitude(base_point_gps_[1])
-
-    left_wall_xyz = convert_points(
-        points_gps=left_wall_gps,
+    left_wall_xyz_ = convert_points(
+        points_gps=left_wall_gps_,
         base_point_gps=base_point_gps_,
         radius_north=radius_north_,
         radius_east=radius_east_,
@@ -238,8 +234,8 @@ if __name__ == '__main__':
         visualize=True,
     )
 
-    right_wall_xyz = convert_points(
-        points_gps=right_wall_gps,
+    right_wall_xyz_ = convert_points(
+        points_gps=right_wall_gps_,
         base_point_gps=base_point_gps_,
         radius_north=radius_north_,
         radius_east=radius_east_,
@@ -249,14 +245,14 @@ if __name__ == '__main__':
 
     # plt.show()
 
-    if create_stl_out:
+    if create_stl_out_:
         create_stl_file(
-            left_wall=left_wall_xyz,
-            right_wall=right_wall_xyz,
+            left_wall=left_wall_xyz_,
+            right_wall=right_wall_xyz_,
             filename='gps.local/racetrack.stl',
         )
 
-    svg = points_to_svg(left_wall_xyz, right_wall_xyz)
+    svg = points_to_svg(left_wall_xyz_, right_wall_xyz_)
     print(svg)
 
 pass
