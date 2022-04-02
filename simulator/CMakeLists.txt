@@ -29,6 +29,7 @@ endif()
 ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/${PROJECT_NAME}.sh.in")
 
 install(PROGRAMS
+        scripts/convert_gnss_to_xyz.py
         scripts/gen_racetrack.py
         scripts/spawn_cones.py
         DESTINATION lib/${PROJECT_NAME})
