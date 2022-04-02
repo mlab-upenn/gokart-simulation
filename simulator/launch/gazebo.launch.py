@@ -24,10 +24,13 @@ def generate_launch_description():
     world_file_path = 'worlds/test_world.world'
 
     # Pose where we want to spawn the robot
-    spawn_x_val = '54.93482898'
-    spawn_y_val = '45.36219518'
+    # (This is the starting line of the Purdue Racetrack)
+    spawn_x_val = '56.39758568'
+    spawn_y_val = '47.69298874'
+    # It is better to spawn the car a bit above the ground and let it fall
+    # to avoid weird simulation bugs due to the floating point numeric errors.
     spawn_z_val = '0.17'
-    spawn_yaw_val = '0'
+    spawn_yaw_val = '-0.57'
 
     # Set the path to different files and folders.
     pkg_gazebo_ros = FindPackageShare(package='gazebo_ros').find('gazebo_ros')
