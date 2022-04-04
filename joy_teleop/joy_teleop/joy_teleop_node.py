@@ -94,7 +94,7 @@ class JoyTeleopNode(Node):
         dt = (timestamp - self.last_timestamp) / 1e9  # seconds
         self.last_timestamp = timestamp
 
-        print(self.msg.velocity, self.msg.steering_angle)
+        # print(self.msg.velocity, self.msg.steering_angle)
         self.command_publisher_.publish(self.msg)
 
     def joy_cb(self, msg: Joy):
