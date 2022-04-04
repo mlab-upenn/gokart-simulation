@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<robot name="gokart" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <link name="lidar_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.125" />
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001" />
+    </inertial>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.0508" length="0.75" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.0508" length="0.75" />
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="lidar_link" />
+    <origin xyz="0.715 0.0 0.30" rpy="0 0 0" />
+  </joint>
+
+  <gazebo reference="lidar_link">
+    <!-- see https://github.com/MURDriverless/ouster_example -->
+    <sensor name="ouster_os1_32" type="ray">
+      <always_on>true</always_on>
+      <visualize>false</visualize>
+      <pose>0.0 0 0.0 0 0 0</pose>
+      <update_rate>15</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>667</samples>
+            <resolution>0.54</resolution>
+            <min_angle>0.000000</min_angle>
+            <max_angle>6.280000</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.120000</min>
+          <max>20</max>
+          <resolution>0.54</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="ouster_os1_32" filename="libgazebo_ros_ray_sensor.so">
+        <ros>
+          <!-- <namespace>/lidar</namespace> -->
+          <remapping>~/out:=scan</remapping>
+        </ros>
+        <output_type>sensor_msgs/LaserScan</output_type>
+        <frame_name>lidar_link</frame_name>
+      </plugin>
+    </sensor>
+
+    <material>Gazebo/Purple</material>
+  </gazebo>
+
+</robot>
