@@ -158,13 +158,14 @@ class KeyTeleopNode(Node):
             self.t1 = datetime.datetime.now()
             self.ttm = 0
         elif self.ttm != 0:
-            print(f'ttm: time to max velocity: {self.ttm}')
+            # print(f'ttm: time to max velocity: {self.ttm}')
+            pass
         elif self.msg.velocity == 8.0:
             self.t2 = datetime.datetime.now()
             self.ttm = self.t2 - self.t1
 
-        print(self.msg.velocity, self.msg.steering_angle)
-        print(self.keyboard_state)
+        # print(self.msg.velocity, self.msg.steering_angle)
+        # print(self.keyboard_state)
         self.command_publisher_.publish(self.msg)
 
     def on_press(self, key: Union[Key, KeyCode]):
@@ -185,7 +186,7 @@ class KeyTeleopNode(Node):
         pass
 
     def run_keyboard_listener(self):
-        print('keyboard listener starting')
+        self.get_logger().info('keyboard listener starting...')
         # non-blocking keyboard listener
         # see https://pynput.readthedocs.io/en/latest/keyboard.html#monitoring-the-keyboard
         self.keyboard_listener = Listener(
@@ -193,6 +194,7 @@ class KeyTeleopNode(Node):
             on_release=self.on_release,
         )
         self.keyboard_listener.start()
+        self.get_logger().info('keyboard listener started')
 
     def stop_keyboard_listener(self):
         self.keyboard_listener.stop()
