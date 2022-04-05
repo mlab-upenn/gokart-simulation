@@ -44,6 +44,17 @@ Arguments (pass arguments as '<name>:=<value>'):
         (default: 'none')
 ```
 
+### Examples
+
+* key teleop
+  ```bash
+  ros2 launch simulator simulation.launch.py teleop:=key
+  ```
+* key teleop and RViz (joint_state_publisher is needed for now as the plugin does not publish joint states yet)
+  ```bash
+  ros2 launch simulator simulation.launch.py teleop:=key start_rviz:=true start_joint_state_publisher:=true
+  ```
+
 
 ## Useful resources
 
