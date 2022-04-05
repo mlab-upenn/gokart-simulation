@@ -28,7 +28,7 @@ def generate_launch_description():
     spawn_x_val = '-0.290488'
     spawn_y_val = '-0.214924'
     spawn_z_val = '0.190000'
-    spawn_yaw_val = '0.887851'
+    spawn_yaw_val = '3.14159'
 
     # Set the path to different files and folders.
     pkg_gazebo_ros = FindPackageShare(package='gazebo_ros').find('gazebo_ros')
