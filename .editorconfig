@@ -1,0 +1,40 @@
+# editorconfig.org
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{xml,urdf,sdf,world}]
+# We should switch to tabs,
+# but to avoid reformatting a lot of code now, we use 2 spaces for now.
+indent_style = space
+indent_size = 2
+
+[*.{yaml,yml}]
+indent_style = space
+indent_size = 2
+
+[*.py]
+indent_style = space
+indent_size = 4
+
+[CMakeLists.txt]
+indent_style = space
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+[package.json]
+indent_style = space
+indent_size = 2
+
+# JetBrain's IDEs does NOT use empty final newline
+# for its metadata files in .idea dir
+[**/.idea/**/*]
+insert_final_newline = false

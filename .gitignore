@@ -1,0 +1,28 @@
+### GENERAL
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+.supported
+
+# common code editors
+.atom/
+.vscode/
+
+# JetBrains IDEs
+# see https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+# ignore everything (not needed for this project)
+.idea/
+
+# common files
+*.log
+
+# local-only files (may be useful during development)
+*.local.*
+*.local
+
+
+### PROJECT
