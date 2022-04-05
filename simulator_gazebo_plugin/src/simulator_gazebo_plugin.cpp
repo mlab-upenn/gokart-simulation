@@ -59,10 +59,10 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
   front_right_steering.SetJoint(fr_steering_joint_name, 2.7, 0.5, 0.3);
   front_right_steering.joint_ = model_->GetJoint(fr_steering_joint_name);
 
-  rear_left_motor.SetJoint(rl_motor_joint_name, 0.2, 0.0, 0.0);
+  rear_left_motor.SetJoint(rl_motor_joint_name, 4.8, 2.8, 0.0);
   rear_left_motor.joint_ = model_->GetJoint(rl_motor_joint_name);
 
-  rear_right_motor.SetJoint(rr_motor_joint_name, 0.2, 0.0, 0.0);
+  rear_right_motor.SetJoint(rr_motor_joint_name, 4.8, 2.8, 0.0);
   rear_right_motor.joint_ = model_->GetJoint(rr_motor_joint_name);
 
   // Hook into simulation update loop
@@ -84,8 +84,12 @@ void GokartGazeboPlugin::Update()
   
   // Compute pid for speed
 
-  auto err_rear_left = rear_left_motor.joint_->GetVelocity(0) - desired_velocity; // need to chceck if id of rotation axis is 0
-  auto err_rear_right = rear_right_motor.joint_->GetVelocity(0) - desired_velocity;
+  double wheel_radius = 0.14; // [m] TODO compute automaticaly from joint definition
+
+  double desired_radial_velocity = desired_velocity/wheel_radius;
+
+  auto err_rear_left = rear_left_motor.joint_->GetVelocity(0) - desired_radial_velocity; // need to chceck if id of rotation axis is 0
+  auto err_rear_right = rear_right_motor.joint_->GetVelocity(0) - desired_radial_velocity;
 
   auto force_rear_left = rear_left_motor.pid.Update(err_rear_left, dt);
   auto force_rear_right = rear_right_motor.pid.Update(err_rear_right, dt);
@@ -118,7 +122,7 @@ void GokartGazeboPlugin::Update()
   front_left_steering.joint_->SetForce(0, force_front_left_steer); // need to chceck if id of rotation axis is 0
   front_right_steering.joint_->SetForce(0, force_front_right_steer);
 
-  RCLCPP_INFO(ros_node_->get_logger(), "\033[31m" + std::to_string(rear_left_motor.joint_->GetVelocity(0)) + "  " + std::to_string(rear_right_motor.joint_->GetVelocity(0)) + "\033[37m");
+  RCLCPP_INFO(ros_node_->get_logger(), "\033[31m" + std::to_string(cur_time.sec) + "  " + std::to_string(rear_left_motor.joint_->GetVelocity(0)) + "  " + std::to_string(rear_right_motor.joint_->GetVelocity(0)) + "\033[37m");
 
   last_sim_time_ = cur_time;
 }
