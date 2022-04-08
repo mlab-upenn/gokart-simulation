@@ -126,6 +126,8 @@ void GokartGazeboPlugin::Update()
   }
 
   // ground_truth_pub
+  ground_truth_msg_.header.frame_id = "map";
+  ground_truth_msg_.child_frame_id = base_link_name_;
   ignition::math::Pose3d pose = base_link_->WorldPose();  // WorldLinearVel
   ground_truth_msg_.pose.pose.position.x = pose.Pos().X();
   ground_truth_msg_.pose.pose.position.y = pose.Pos().Y();
