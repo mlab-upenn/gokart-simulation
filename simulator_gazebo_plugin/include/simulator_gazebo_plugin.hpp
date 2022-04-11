@@ -19,6 +19,8 @@
 #include <gazebo/common/Plugin.hh>
 #include <rclcpp/rclcpp.hpp>
 
+#include <tf2_ros/transform_broadcaster.h>
+
 #include <nav_msgs/msg/odometry.hpp>
 #include <simulator_msgs/msg/control_command.hpp>
 #include <autoware_auto_vehicle_msgs/msg/vehicle_control_command.hpp>
@@ -45,10 +47,12 @@ private:
   using Odometry = nav_msgs::msg::Odometry;
 
   std::string base_link_name_;
+  std::string map_frame_name_;
   std::string fl_steering_joint_name_;
   std::string fr_steering_joint_name_;
   std::string rl_motor_joint_name_;
   std::string rr_motor_joint_name_;
+  bool publish_ground_truth_transform_;
 
   gazebo::physics::WorldPtr world_;
   gazebo::physics::ModelPtr model_;
@@ -75,6 +79,8 @@ private:
   rclcpp::Subscription<ControlCommand>::SharedPtr control_command_sub_;
   rclcpp::Subscription<AutowareControlCommand>::SharedPtr autoware_control_command_sub_;
   rclcpp::Publisher<Odometry>::SharedPtr ground_truth_pub_;
+
+  std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
   Odometry ground_truth_msg_ = Odometry();
 

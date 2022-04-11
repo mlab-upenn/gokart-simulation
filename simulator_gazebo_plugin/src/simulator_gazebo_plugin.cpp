@@ -1,12 +1,15 @@
 #include "simulator_gazebo_plugin.hpp"
 
 #include <math.h>
+#include <tf2_ros/transform_broadcaster.h>
 
 #include <iostream>
 
 #include "terminal.h"
 #include <gazebo/physics/physics.hh>
 #include <gazebo_ros/node.hpp>
+
+#include <geometry_msgs/msg/transform_stamped.hpp>
 
 namespace gokart_gazebo_plugin
 {
@@ -18,11 +21,13 @@ GokartGazeboPlugin::GokartGazeboPlugin()
 
 void GokartGazeboPlugin::LoadParameters(sdf::ElementPtr sdf)
 {
+  map_frame_name_ = sdf->GetElement("mapFrameName")->Get<std::string>();
   base_link_name_ = sdf->GetElement("baseLinkName")->Get<std::string>();
   fl_steering_joint_name_ = sdf->GetElement("frontLeftSteeringJointName")->Get<std::string>();
   fr_steering_joint_name_ = sdf->GetElement("frontRightSteeringJointName")->Get<std::string>();
   rl_motor_joint_name_ = sdf->GetElement("rearLeftMotorJointName")->Get<std::string>();
   rr_motor_joint_name_ = sdf->GetElement("rearRightMotorJointName")->Get<std::string>();
+  publish_ground_truth_transform_ = sdf->GetElement("publishGroundTruthTransform")->Get<bool>();
 }
 
 void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
@@ -49,6 +54,8 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
   RCLCPP_INFO(ros_node_->get_logger(), red("Setting up ROS node..."));
 
   ground_truth_pub_ = ros_node_->create_publisher<Odometry>("/ground_truth", 1);
+
+  tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*ros_node_);
 
   control_command_sub_ = ros_node_->create_subscription<ControlCommand>(
     "/control_cmd", 1, [=](ControlCommand::SharedPtr msg) {
@@ -108,7 +115,8 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
   rear_right_motor.SetJoint(rr_motor_joint_name_, 4.8, 2.8, 0.0);
   rear_right_motor.joint_ = model_->GetJoint(rr_motor_joint_name_);
 
-  // RCLCPP_INFO(ros_node_->get_logger(), red("Wheel radius: ") + rear_right_motor.joint_->GetChild()->GetSDF());
+  // RCLCPP_INFO(ros_node_->get_logger(), red("Wheel radius: ") +
+  // rear_right_motor.joint_->GetChild()->GetSDF());
 
   // Hook into simulation update loop
   update_connection_ =
@@ -126,7 +134,7 @@ void GokartGazeboPlugin::Update()
   }
 
   // ground_truth_pub
-  ground_truth_msg_.header.frame_id = "map";
+  ground_truth_msg_.header.frame_id = map_frame_name_;
   ground_truth_msg_.child_frame_id = base_link_name_;
   ignition::math::Pose3d pose = base_link_->WorldPose();  // WorldLinearVel
   ground_truth_msg_.pose.pose.position.x = pose.Pos().X();
@@ -145,6 +153,28 @@ void GokartGazeboPlugin::Update()
   ground_truth_msg_.twist.twist.angular.y = angular_velocity.Y();
   ground_truth_msg_.twist.twist.angular.z = angular_velocity.Z();
   ground_truth_pub_->publish(ground_truth_msg_);
+
+  if (publish_ground_truth_transform_) {
+    // tf publisher
+    rclcpp::Time now = ros_node_->get_clock()->now();
+    geometry_msgs::msg::TransformStamped t;
+
+    t.header.stamp = now;
+    t.header.frame_id = map_frame_name_;
+    t.child_frame_id = base_link_name_;
+
+    t.transform.translation.x = pose.Pos().X();
+    t.transform.translation.y = pose.Pos().Y();
+    t.transform.translation.z = pose.Pos().Z();
+
+    t.transform.rotation.x = pose.Rot().X();
+    t.transform.rotation.y = pose.Rot().Y();
+    t.transform.rotation.z = pose.Rot().Z();
+    t.transform.rotation.w = pose.Rot().W();
+
+    // Send the transformation
+    tf_broadcaster_->sendTransform(t);
+  }
 
   auto dt = (cur_time - last_sim_time_).Double();
 

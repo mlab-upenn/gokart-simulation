@@ -15,6 +15,8 @@ find_package(gazebo REQUIRED)
 find_package(gazebo_ros REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2 REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(simulator_msgs REQUIRED)
 find_package(nav_msgs)
@@ -30,6 +32,8 @@ ament_target_dependencies(simulator_gazebo_plugin
         "gazebo_ros"
         "rclcpp"
         "sensor_msgs"
+        "tf2_ros"
+        "tf2"
         "simulator_msgs"
         "nav_msgs"
         "autoware_auto_vehicle_msgs")
