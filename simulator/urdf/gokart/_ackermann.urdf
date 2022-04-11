@@ -4,10 +4,12 @@
   <gazebo>
     <plugin name="simulator_gazebo_plugin" filename="libsimulator_gazebo_plugin.so">
       <baseLinkName>base_link</baseLinkName>
+      <mapFrameName>map</mapFrameName>
       <frontLeftSteeringJointName>wheel_fl_steer_joint</frontLeftSteeringJointName>
       <frontRightSteeringJointName>wheel_fr_steer_joint</frontRightSteeringJointName>
       <rearLeftMotorJointName>wheel_rl_joint</rearLeftMotorJointName>
       <rearRightMotorJointName>wheel_rr_joint</rearRightMotorJointName>
+      <publishGroundTruthTransform>true</publishGroundTruthTransform>
     </plugin>
   </gazebo>
 
