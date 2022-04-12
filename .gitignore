@@ -26,3 +26,6 @@ Desktop.ini
 
 
 ### PROJECT
+
+__pycache__/
+.env
