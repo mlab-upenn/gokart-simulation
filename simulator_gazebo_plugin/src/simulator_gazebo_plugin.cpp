@@ -25,6 +25,8 @@ void GokartGazeboPlugin::LoadParameters(sdf::ElementPtr sdf)
   base_link_name_ = sdf->GetElement("baseLinkName")->Get<std::string>();
   fl_steering_joint_name_ = sdf->GetElement("frontLeftSteeringJointName")->Get<std::string>();
   fr_steering_joint_name_ = sdf->GetElement("frontRightSteeringJointName")->Get<std::string>();
+  fl_motor_joint_name_ = sdf->GetElement("frontLeftMotorJointName")->Get<std::string>();
+  fr_motor_joint_name_ = sdf->GetElement("frontRightMotorJointName")->Get<std::string>();
   rl_motor_joint_name_ = sdf->GetElement("rearLeftMotorJointName")->Get<std::string>();
   rr_motor_joint_name_ = sdf->GetElement("rearRightMotorJointName")->Get<std::string>();
   publish_ground_truth_transform_ = sdf->GetElement("publishGroundTruthTransform")->Get<bool>();
@@ -54,6 +56,8 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
   RCLCPP_INFO(ros_node_->get_logger(), red("Setting up ROS node..."));
 
   ground_truth_pub_ = ros_node_->create_publisher<Odometry>("/ground_truth", 1);
+
+  joint_state_pub_ = ros_node_->create_publisher<JointState>("/joint_states", 1);
 
   tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*ros_node_);
 
@@ -108,6 +112,12 @@ void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr s
 
   front_right_steering.SetJoint(fr_steering_joint_name_, 2.7, 0.5, 0.3);
   front_right_steering.joint_ = model_->GetJoint(fr_steering_joint_name_);
+
+  front_left_motor.SetJoint(fl_motor_joint_name_, 0.0, 0.0, 0.0);
+  front_left_motor.joint_ = model_->GetJoint(fl_motor_joint_name_);
+
+  front_right_motor.SetJoint(rr_motor_joint_name_, 0.0, 0.0, 0.0);
+  front_right_motor.joint_ = model_->GetJoint(fr_motor_joint_name_);
 
   rear_left_motor.SetJoint(rl_motor_joint_name_, 4.8, 2.8, 0.0);
   rear_left_motor.joint_ = model_->GetJoint(rl_motor_joint_name_);
@@ -176,6 +186,42 @@ void GokartGazeboPlugin::Update()
     // Send the transformation
     tf_broadcaster_->sendTransform(ground_truth_tf_pub_);
   }
+
+  // joint state publisher
+
+  joint_state_msg_.header.stamp.sec = cur_time.sec;
+  joint_state_msg_.header.stamp.nanosec = cur_time.nsec;
+  joint_state_msg_.header.frame_id = base_link_name_;
+  joint_state_msg_.name = {
+    rl_motor_joint_name_,
+    rr_motor_joint_name_,
+    fl_steering_joint_name_,
+    fr_steering_joint_name_,
+    fl_motor_joint_name_,
+    fr_motor_joint_name_};
+  joint_state_msg_.position = {
+    rear_left_motor.joint_->Position(0),
+    rear_right_motor.joint_->Position(0),
+    front_left_steering.joint_->Position(0),
+    front_right_steering.joint_->Position(0),
+    front_left_motor.joint_->Position(0),
+    front_right_motor.joint_->Position(0)};
+  joint_state_msg_.velocity = {
+    rear_left_motor.joint_->GetVelocity(0),
+    rear_right_motor.joint_->GetVelocity(0),
+    front_left_steering.joint_->GetVelocity(0),
+    front_right_steering.joint_->GetVelocity(0),
+    front_left_motor.joint_->GetVelocity(0),
+    front_right_motor.joint_->GetVelocity(0)};
+  joint_state_msg_.effort = {
+    rear_left_motor.joint_->GetForce(0),
+    rear_right_motor.joint_->GetForce(0),
+    front_left_steering.joint_->GetForce(0),
+    front_right_steering.joint_->GetForce(0),
+    front_left_motor.joint_->GetForce(0),
+    front_right_motor.joint_->GetForce(0)};
+
+  joint_state_pub_->publish(joint_state_msg_);
 
   auto dt = (cur_time - last_sim_time_).Double();
 

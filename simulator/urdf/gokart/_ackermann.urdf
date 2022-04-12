@@ -7,6 +7,8 @@
       <mapFrameName>map</mapFrameName>
       <frontLeftSteeringJointName>wheel_fl_steer_joint</frontLeftSteeringJointName>
       <frontRightSteeringJointName>wheel_fr_steer_joint</frontRightSteeringJointName>
+      <frontLeftMotorJointName>wheel_fl_joint</frontLeftMotorJointName>
+      <frontRightMotorJointName>wheel_fr_joint</frontRightMotorJointName>
       <rearLeftMotorJointName>wheel_rl_joint</rearLeftMotorJointName>
       <rearRightMotorJointName>wheel_rr_joint</rearRightMotorJointName>
       <publishGroundTruthTransform>true</publishGroundTruthTransform>
