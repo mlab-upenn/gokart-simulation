@@ -12,6 +12,7 @@
       <rearLeftMotorJointName>wheel_rl_joint</rearLeftMotorJointName>
       <rearRightMotorJointName>wheel_rr_joint</rearRightMotorJointName>
       <publishGroundTruthTransform>true</publishGroundTruthTransform>
+      <publishJointStates>false</publishJointStates>
     </plugin>
   </gazebo>
 

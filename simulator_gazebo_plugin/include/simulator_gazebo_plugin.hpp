@@ -57,6 +57,7 @@ private:
   std::string rl_motor_joint_name_;
   std::string rr_motor_joint_name_;
   bool publish_ground_truth_transform_;
+  bool publish_joint_states_;
 
   gazebo::physics::WorldPtr world_;
   gazebo::physics::ModelPtr model_;

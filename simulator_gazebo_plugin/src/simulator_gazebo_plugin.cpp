@@ -30,6 +30,7 @@ void GokartGazeboPlugin::LoadParameters(sdf::ElementPtr sdf)
   rl_motor_joint_name_ = sdf->GetElement("rearLeftMotorJointName")->Get<std::string>();
   rr_motor_joint_name_ = sdf->GetElement("rearRightMotorJointName")->Get<std::string>();
   publish_ground_truth_transform_ = sdf->GetElement("publishGroundTruthTransform")->Get<bool>();
+  publish_joint_states_ = sdf->GetElement("publishJointStates")->Get<bool>();
 }
 
 void GokartGazeboPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
@@ -187,41 +188,42 @@ void GokartGazeboPlugin::Update()
     tf_broadcaster_->sendTransform(ground_truth_tf_pub_);
   }
 
-  // joint state publisher
+  if (publish_joint_states_) {
+    // joint state publisher
+    joint_state_msg_.header.stamp.sec = cur_time.sec;
+    joint_state_msg_.header.stamp.nanosec = cur_time.nsec;
+    joint_state_msg_.header.frame_id = base_link_name_;
+    joint_state_msg_.name = {
+      rl_motor_joint_name_,
+      rr_motor_joint_name_,
+      fl_steering_joint_name_,
+      fr_steering_joint_name_,
+      fl_motor_joint_name_,
+      fr_motor_joint_name_};
+    joint_state_msg_.position = {
+      rear_left_motor.joint_->Position(0),
+      rear_right_motor.joint_->Position(0),
+      front_left_steering.joint_->Position(0),
+      front_right_steering.joint_->Position(0),
+      front_left_motor.joint_->Position(0),
+      front_right_motor.joint_->Position(0)};
+    joint_state_msg_.velocity = {
+      rear_left_motor.joint_->GetVelocity(0),
+      rear_right_motor.joint_->GetVelocity(0),
+      front_left_steering.joint_->GetVelocity(0),
+      front_right_steering.joint_->GetVelocity(0),
+      front_left_motor.joint_->GetVelocity(0),
+      front_right_motor.joint_->GetVelocity(0)};
+    joint_state_msg_.effort = {
+      rear_left_motor.joint_->GetForce(0),
+      rear_right_motor.joint_->GetForce(0),
+      front_left_steering.joint_->GetForce(0),
+      front_right_steering.joint_->GetForce(0),
+      front_left_motor.joint_->GetForce(0),
+      front_right_motor.joint_->GetForce(0)};
 
-  joint_state_msg_.header.stamp.sec = cur_time.sec;
-  joint_state_msg_.header.stamp.nanosec = cur_time.nsec;
-  joint_state_msg_.header.frame_id = base_link_name_;
-  joint_state_msg_.name = {
-    rl_motor_joint_name_,
-    rr_motor_joint_name_,
-    fl_steering_joint_name_,
-    fr_steering_joint_name_,
-    fl_motor_joint_name_,
-    fr_motor_joint_name_};
-  joint_state_msg_.position = {
-    rear_left_motor.joint_->Position(0),
-    rear_right_motor.joint_->Position(0),
-    front_left_steering.joint_->Position(0),
-    front_right_steering.joint_->Position(0),
-    front_left_motor.joint_->Position(0),
-    front_right_motor.joint_->Position(0)};
-  joint_state_msg_.velocity = {
-    rear_left_motor.joint_->GetVelocity(0),
-    rear_right_motor.joint_->GetVelocity(0),
-    front_left_steering.joint_->GetVelocity(0),
-    front_right_steering.joint_->GetVelocity(0),
-    front_left_motor.joint_->GetVelocity(0),
-    front_right_motor.joint_->GetVelocity(0)};
-  joint_state_msg_.effort = {
-    rear_left_motor.joint_->GetForce(0),
-    rear_right_motor.joint_->GetForce(0),
-    front_left_steering.joint_->GetForce(0),
-    front_right_steering.joint_->GetForce(0),
-    front_left_motor.joint_->GetForce(0),
-    front_right_motor.joint_->GetForce(0)};
-
-  joint_state_pub_->publish(joint_state_msg_);
+    joint_state_pub_->publish(joint_state_msg_);
+  }
 
   auto dt = (cur_time - last_sim_time_).Double();
 
