@@ -14,3 +14,7 @@
       angular_velocity: 1.2  # rad/s
       min: -1.2  # rad
       max: 1.2  # rad
+/robot_state_publisher:
+  # see https://github.com/ros/robot_state_publisher/tree/ros2
+  ros__parameters:
+    publish_frequency: 1000.0  # Hz (double)
