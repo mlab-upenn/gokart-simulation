@@ -68,8 +68,8 @@ def generate_launch_description():
     headless = LaunchConfiguration('headless')
     start_gzclient = LaunchConfiguration('start_gzclient')
     start_rviz = LaunchConfiguration('start_rviz')
-    start_joint_state_publisher = LaunchConfiguration(
-        'start_joint_state_publisher'
+    start_joint_state_publisher_legacy = LaunchConfiguration(
+        'start_joint_state_publisher_legacy'
     )
     teleop = LaunchConfiguration('teleop')
 
@@ -122,10 +122,14 @@ def generate_launch_description():
         description='Start teleop tool. Allowed values: key, joy, none.',
     )
 
-    declare_start_joint_state_publisher_la = DeclareLaunchArgument(
-        name='start_joint_state_publisher',
+    declare_start_joint_state_publisher_legacy_la = DeclareLaunchArgument(
+        name='start_joint_state_publisher_legacy',
         default_value='false',
-        description='Whether to start joint_state_publisher.',
+        description=(
+            'Whether to start joint_state_publisher. Not needed anymore.'
+            ' simulator_gazebo_plugin publishes joint states by default (at the correct frequency).'
+            ' Do NOT this use unless you set simulator_gazebo_plugin publishJointStates to false.'
+        ),
     )
 
     # Subscribe to the joint states of the robot, and publish the 3D pose of each link.
@@ -143,7 +147,7 @@ def generate_launch_description():
     # Publish the joint states of the robot
     # (needed only in case the simulation does not publish the joint state)
     joint_state_publisher_node = Node(
-        condition=IfCondition(start_joint_state_publisher),
+        condition=IfCondition(start_joint_state_publisher_legacy),
         package='joint_state_publisher',
         executable='joint_state_publisher',
         parameters=[
@@ -260,7 +264,7 @@ def generate_launch_description():
     ld.add_action(declare_headless_la)
     ld.add_action(declare_start_gzclient_la)
     ld.add_action(declare_start_rviz_la)
-    ld.add_action(declare_start_joint_state_publisher_la)
+    ld.add_action(declare_start_joint_state_publisher_legacy_la)
     ld.add_action(declare_teleop_la)
 
     # Add any actions

@@ -35,8 +35,8 @@ Arguments (pass arguments as '<name>:=<value>'):
         Whether to start RViz.
         (default: 'False')
 
-    'start_joint_state_publisher':
-        Whether to start joint_state_publisher.
+    'start_joint_state_publisher_legacy':
+        Whether to start joint_state_publisher. Not needed anymore. simulator_gazebo_plugin publishes joint states by default (at the correct frequency). Do NOT this use unless you set simulator_gazebo_plugin publishJointStates to false.
         (default: 'false')
 
     'teleop':
@@ -50,9 +50,9 @@ Arguments (pass arguments as '<name>:=<value>'):
   ```bash
   ros2 launch simulator simulation.launch.py teleop:=key
   ```
-* key teleop and RViz (joint_state_publisher is needed for now as the plugin does not publish joint states yet)
+* **key teleop and RViz**
   ```bash
-  ros2 launch simulator simulation.launch.py teleop:=key start_rviz:=true start_joint_state_publisher:=true
+  ros2 launch simulator simulation.launch.py teleop:=key start_rviz:=true
   ```
 
 
