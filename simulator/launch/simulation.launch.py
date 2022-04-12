@@ -67,6 +67,7 @@ def generate_launch_description():
     )
     headless = LaunchConfiguration('headless')
     start_gzclient = LaunchConfiguration('start_gzclient')
+    start_map_sender = LaunchConfiguration('start_map_sender')
     start_rviz = LaunchConfiguration('start_rviz')
     start_joint_state_publisher_legacy = LaunchConfiguration(
         'start_joint_state_publisher_legacy'
@@ -108,6 +109,12 @@ def generate_launch_description():
         name='start_gzclient',
         default_value='true',
         description='Whether to start Gazebo GUI (gzclient).',
+    )
+
+    declare_start_map_sender_la = DeclareLaunchArgument(
+        name='start_map_sender',
+        default_value='true',
+        description='Whether to run send_map.py (sends map viz for RViz).',
     )
 
     declare_start_rviz_la = DeclareLaunchArgument(
@@ -190,6 +197,18 @@ def generate_launch_description():
         ],
     )
 
+    # Start map sender
+    map_sender_node = Node(
+        condition=IfCondition(start_map_sender),
+        package='simulator',
+        executable='send_map.py',
+        name='map_sender',
+        parameters=[
+            config_abs_path,
+        ],
+        output='screen',
+    )
+
     def start_rviz_predicate(context: LaunchContext) -> bool:
         start_rviz_ = expr_to_bool(context, [start_rviz])
         headless_ = expr_to_bool(context, [headless])
@@ -250,6 +269,9 @@ def generate_launch_description():
             '-z', spawn_z_val,
             '-Y', spawn_yaw_val,
         ],
+        parameters=[
+            config_abs_path,
+        ],
         output='screen',
     )
 
@@ -263,6 +285,7 @@ def generate_launch_description():
     ld.add_action(declare_rviz_config_la)
     ld.add_action(declare_headless_la)
     ld.add_action(declare_start_gzclient_la)
+    ld.add_action(declare_start_map_sender_la)
     ld.add_action(declare_start_rviz_la)
     ld.add_action(declare_start_joint_state_publisher_legacy_la)
     ld.add_action(declare_teleop_la)
@@ -270,6 +293,7 @@ def generate_launch_description():
     # Add any actions
     ld.add_action(gazebo_server_ld)
     ld.add_action(gazebo_client_ld)
+    ld.add_action(map_sender_node)
     ld.add_action(robot_state_publisher_node)
     ld.add_action(joint_state_publisher_node)
     ld.add_action(spawn_entity_node)

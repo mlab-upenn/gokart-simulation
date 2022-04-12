@@ -7,7 +7,6 @@ Panels:
         - /Global Options1
         - /Status1
         - /TF1/Tree1
-        - /LaserScan1
       Splitter Ratio: 0.570588231086731
     Tree Height: 472
   - Class: rviz_common/Selection
@@ -49,21 +48,29 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_footprint:
-          Value: true
         base_link:
           Value: true
-        drivewhl_l_link:
+        body_frame_link:
           Value: true
-        drivewhl_r_link:
-          Value: true
-        front_caster:
+        camera_link:
           Value: true
         imu_link:
           Value: true
         lidar_link:
           Value: true
-        root_link:
+        map:
+          Value: true
+        wheel_fl_link:
+          Value: true
+        wheel_fl_steer_link:
+          Value: true
+        wheel_fr_link:
+          Value: true
+        wheel_fr_steer_link:
+          Value: true
+        wheel_rl_link:
+          Value: true
+        wheel_rr_link:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -71,20 +78,26 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
-        root_link:
+        map:
           base_link:
-            base_footprint:
+            body_frame_link:
               {}
-            front_caster:
+            camera_link:
               {}
             imu_link:
               {}
             lidar_link:
               {}
-          drivewhl_l_link:
-            {}
-          drivewhl_r_link:
-            {}
+            wheel_fl_steer_link:
+              wheel_fl_link:
+                {}
+            wheel_fr_steer_link:
+              wheel_fr_link:
+                {}
+            wheel_rl_link:
+              {}
+            wheel_rr_link:
+              {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -105,26 +118,16 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        base_footprint:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
-        drivewhl_l_link:
+        body_frame_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        drivewhl_r_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        front_caster:
+        camera_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -139,11 +142,35 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        root_link:
+        wheel_fl_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-      Name: RobotModel
+          Value: true
+        wheel_fl_steer_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        wheel_fr_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        wheel_fr_steer_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        wheel_rl_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        wheel_rr_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Name: UPenn GoKart
       TF Prefix: ""
       Update Interval: 0
       Value: true
@@ -163,10 +190,10 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 0
+      Max Intensity: -999999
       Min Color: 0; 0; 0
-      Min Intensity: 0
-      Name: LaserScan
+      Min Intensity: 999999
+      Name: 2D LiDAR
       Position Transformer: XYZ
       Selectable: true
       Size (Pixels): 3
@@ -180,6 +207,18 @@ Visualization Manager:
         Value: /scan
       Use Fixed Frame: true
       Use rainbow: true
+      Value: true
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: Map
+      Namespaces:
+        map: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /viz_map
       Value: true
   Enabled: true
   Global Options:
@@ -224,7 +263,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 8.567159652709961
+      Distance: 10.203614234924316
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
