@@ -44,9 +44,10 @@ Arguments (pass arguments as '<name>:=<value>'):
         (default: 'none')
 ```
 
+
 ### Examples
 
-* key teleop
+* **key teleop**
   ```bash
   ros2 launch simulator simulation.launch.py teleop:=key
   ```
@@ -54,6 +55,18 @@ Arguments (pass arguments as '<name>:=<value>'):
   ```bash
   ros2 launch simulator simulation.launch.py teleop:=key start_rviz:=true
   ```
+
+
+### Cones spawning
+
+There is a [**cone_spawner** node](./scripts/spawn_cones.py) that can be started using the following command:
+```bash
+ros2 run simulator spawn_cones.py --ros-args -p distance_between_cones=5.0
+```
+
+The `distance_between_cones` param can be changed during runtime (for example using rqt_reconfigure). Whenever the value changes, all cones are removed and a new set is spawned.
+
+See [its source code](./scripts/spawn_cones.py) for more info.
 
 
 ## Useful resources
