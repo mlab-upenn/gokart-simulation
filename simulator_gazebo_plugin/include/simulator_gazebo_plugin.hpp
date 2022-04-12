@@ -80,6 +80,8 @@ private:
   rclcpp::Subscription<AutowareControlCommand>::SharedPtr autoware_control_command_sub_;
   rclcpp::Publisher<Odometry>::SharedPtr ground_truth_pub_;
 
+  geometry_msgs::msg::TransformStamped ground_truth_tf_pub_;
+
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
   Odometry ground_truth_msg_ = Odometry();

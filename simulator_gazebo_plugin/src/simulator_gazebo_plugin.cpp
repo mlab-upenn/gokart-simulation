@@ -134,6 +134,8 @@ void GokartGazeboPlugin::Update()
   }
 
   // ground_truth_pub
+  ground_truth_msg_.header.stamp.sec = cur_time.sec;
+  ground_truth_msg_.header.stamp.nanosec = cur_time.nsec;
   ground_truth_msg_.header.frame_id = map_frame_name_;
   ground_truth_msg_.child_frame_id = base_link_name_;
   ignition::math::Pose3d pose = base_link_->WorldPose();  // WorldLinearVel
@@ -144,11 +146,11 @@ void GokartGazeboPlugin::Update()
   ground_truth_msg_.pose.pose.orientation.y = pose.Rot().Y();
   ground_truth_msg_.pose.pose.orientation.z = pose.Rot().Z();
   ground_truth_msg_.pose.pose.orientation.w = pose.Rot().W();
-  ignition::math::Vector3d lin_velocity = base_link_->WorldLinearVel();
+  ignition::math::Vector3d lin_velocity = base_link_->RelativeLinearVel();
   ground_truth_msg_.twist.twist.linear.x = lin_velocity.X();
   ground_truth_msg_.twist.twist.linear.y = lin_velocity.Y();
   ground_truth_msg_.twist.twist.linear.z = lin_velocity.Z();
-  ignition::math::Vector3d angular_velocity = base_link_->WorldAngularVel();
+  ignition::math::Vector3d angular_velocity = base_link_->RelativeAngularVel();
   ground_truth_msg_.twist.twist.angular.x = angular_velocity.X();
   ground_truth_msg_.twist.twist.angular.y = angular_velocity.Y();
   ground_truth_msg_.twist.twist.angular.z = angular_velocity.Z();
@@ -156,24 +158,23 @@ void GokartGazeboPlugin::Update()
 
   if (publish_ground_truth_transform_) {
     // tf publisher
-    rclcpp::Time now = ros_node_->get_clock()->now();
-    geometry_msgs::msg::TransformStamped t;
 
-    t.header.stamp = now;
-    t.header.frame_id = map_frame_name_;
-    t.child_frame_id = base_link_name_;
+    ground_truth_tf_pub_.header.stamp.sec = cur_time.sec;
+    ground_truth_tf_pub_.header.stamp.nanosec = cur_time.nsec;
+    ground_truth_tf_pub_.header.frame_id = map_frame_name_;
+    ground_truth_tf_pub_.child_frame_id = base_link_name_;
 
-    t.transform.translation.x = pose.Pos().X();
-    t.transform.translation.y = pose.Pos().Y();
-    t.transform.translation.z = pose.Pos().Z();
+    ground_truth_tf_pub_.transform.translation.x = pose.Pos().X();
+    ground_truth_tf_pub_.transform.translation.y = pose.Pos().Y();
+    ground_truth_tf_pub_.transform.translation.z = pose.Pos().Z();
 
-    t.transform.rotation.x = pose.Rot().X();
-    t.transform.rotation.y = pose.Rot().Y();
-    t.transform.rotation.z = pose.Rot().Z();
-    t.transform.rotation.w = pose.Rot().W();
+    ground_truth_tf_pub_.transform.rotation.x = pose.Rot().X();
+    ground_truth_tf_pub_.transform.rotation.y = pose.Rot().Y();
+    ground_truth_tf_pub_.transform.rotation.z = pose.Rot().Z();
+    ground_truth_tf_pub_.transform.rotation.w = pose.Rot().W();
 
     // Send the transformation
-    tf_broadcaster_->sendTransform(t);
+    tf_broadcaster_->sendTransform(ground_truth_tf_pub_);
   }
 
   auto dt = (cur_time - last_sim_time_).Double();
