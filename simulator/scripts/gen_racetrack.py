@@ -146,39 +146,93 @@ def create_stl_file(left_wall, right_wall, filename):
     racetrack.save(filename)
 
 
-# TODO: replace hardcoded size
-# Note: only mm (millimeters) works as the absolute unit when importing to Blender
-def svg_with_path(path: str) -> str:
+def svg_with_path(width: int, height: int, path: str, fill_color: str = 'rgb(255,82,31)') -> str:
+    """
+    width [m]
+    height [m]
+    """
+    # Note: only mm (millimeters) works as the absolute unit when importing to Blender
+    width_in_mm = width * 1000
+    height_in_mm = height * 1000
     xml = f'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="200000mm" height="200000mm" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <path d="{path}" style="fill:rgb(255,82,31);"/>
+<svg width="{width_in_mm}mm" height="{height_in_mm}mm" viewBox="0 0 {width} {height}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <path d="{path}" style="fill:{fill_color};"/>
 </svg>
 '''
     return xml
 
 
-# TODO: replace hardcoded size
-def points_to_svg(left_points, right_points):
-    points_str_arr = []
-    for point in left_points:
+def create_track_svg_parts(bounding_rectangle_size, left_points, right_points):
+    """
+    All numbers should be floats. Unit is meters [m].
+    But only whole numbers are supported for bounding_rectangle_size for now.
+    Number of left_points and right_points can be different (N vs M).
+
+    bounding_rectangle_size = [width, height]
+    left_points = [[x_1, y_1], ..., [x_N, y_N]]
+    right_points = [[x_1, y_1], ..., [x_M, y_M]]
+    """
+
+    [width, height] = bounding_rectangle_size
+
+    boundary_points = [
+        # the order matters!
+        [0.0, 0.0],  # bottom left corner
+        [width, 0.0],  # bottom right corner
+        [width, height],  # top right corner
+        [0.0, height],  # top left corner
+    ]
+
+    # Note: SVG coordinate origin [0,0] is top-left corner.
+    #       Our coordinate origin [0,0] is bottom-left corner.
+    #       So we need to flip vertically (that's the reason for y = height - point[1]).
+    def point_to_svg_str(point):
         x = point[0]
-        y = 200.0 - point[1]
-        points_str_arr.append(f'{x:.10f},{y:.10f}')
-    points_str = 'L'.join(points_str_arr)
-    left_path = f'M{points_str}Z'
+        y = height - point[1]
+        return f'{x:.10f},{y:.10f}'
 
-    points_str_arr = []
-    for point in right_points:
-        x = point[0]
-        y = 200.0 - point[1]
-        points_str_arr.append(f'{x:.10f},{y:.10f}')
-    points_str = 'L'.join(points_str_arr)
-    right_path = f'M{points_str}Z'
+    def points_to_path(points):
+        points_str_arr = []
+        for point in points:
+            points_str_arr.append(point_to_svg_str(point))
+        points_str = 'L'.join(points_str_arr)
+        return f'M{points_str}Z'
 
-    path = left_path + right_path
+    # note: Only integers are supported for SVG (and its viewBox) width/height.
+    #       We could support floats as well but ints make things easier.
+    w = int(width)
+    h = int(height)
 
-    return svg_with_path(path)
+    boundary_path = points_to_path(boundary_points)
+    left_path = points_to_path(left_points)
+    right_path = points_to_path(right_points)
+
+    svg_track_outside = svg_with_path(
+        width=w,
+        height=h,
+        path=boundary_path + left_path,
+        fill_color='rgb(255,82,31)',
+    )
+    svg_track_road = svg_with_path(
+        width=w,
+        height=h,
+        path=left_path + right_path,
+        fill_color='rgb(93,93,93)',
+    )
+    svg_track_inside = svg_with_path(
+        width=w,
+        height=h,
+        path=right_path,
+        fill_color='rgb(69,146,44)',
+    )
+
+    return svg_track_outside, svg_track_road, svg_track_inside
+
+
+def save_txt_to_file(filename, text):
+    with open(filename, 'w') as f:
+        f.write(text)
 
 
 def get_earth_radius_at_latitude(latitude: float) -> Tuple[float, float]:
@@ -252,7 +306,13 @@ if __name__ == '__main__':
             filename='gps.local/racetrack.stl',
         )
 
-    svg = points_to_svg(left_wall_xyz_, right_wall_xyz_)
-    print(svg)
+    svg_track_outside, svg_track_road, svg_track_inside = create_track_svg_parts(
+        bounding_rectangle_size=[150.0, 150.0],
+        left_points=left_wall_xyz_,
+        right_points=right_wall_xyz_,
+    )
+    save_txt_to_file('track_outside.local.svg', svg_track_outside)
+    save_txt_to_file('track_road.local.svg', svg_track_road)
+    save_txt_to_file('track_inside.local.svg', svg_track_inside)
 
-pass
+    pass
