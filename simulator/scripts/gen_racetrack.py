@@ -258,16 +258,17 @@ if __name__ == '__main__':
     # GNSS racetrack boundary points
     left_wall_gps_ = load_wall(
         get_package_share_directory('simulator')
-        + '/models/purdue_racetrack/gps_data/left.csv'
+        + '/models/pennovation_track/gps_data/left.csv'
     )
     right_wall_gps_ = load_wall(
         get_package_share_directory('simulator')
-        + '/models/purdue_racetrack/gps_data/right.csv'
+        + '/models/pennovation_track/gps_data/right.csv'
     )
 
     # [longitude, latitude, elevation]
     # GNSS coordinates that corresponds to the XYZ coordinates origin point [0,0,0]
-    base_point_gps_ = [-86.945105, 40.437265, 0.0]
+    # base_point_gps_ = [-86.945105, 40.437265, 0.0] # Purdue
+    base_point_gps_ = [-75.19868, 39.94165, 0.0] # Pennovation
 
     # If program should create an STL file (using a primitive tesselation algorithm).
     # Does not work good enough. It is better to create an SVG, import it to Blender,
