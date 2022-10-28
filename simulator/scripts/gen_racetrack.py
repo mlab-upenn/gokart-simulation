@@ -258,7 +258,7 @@ if __name__ == '__main__':
     # INPUTS:
     # GNSS racetrack boundary points
     left_wall_gps_ = load_wall(
-        '../models/pennovation_track/gps_data/left.csv'
+        '../models/pennovation_track/gps_data/right.csv'
     )
 
     """
@@ -267,7 +267,7 @@ if __name__ == '__main__':
     """
 
     right_wall_gps_ = load_wall(
-        '../models/pennovation_track/gps_data/right.csv'
+        '../models/pennovation_track/gps_data/left.csv'
     )
     """
     get_package_share_directory('simulator')
