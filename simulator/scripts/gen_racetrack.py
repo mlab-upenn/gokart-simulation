@@ -9,7 +9,7 @@ from stl import mesh
 import matplotlib.pyplot as plt
 from operator import itemgetter
 from typing import Tuple
-from ament_index_python import get_package_share_directory
+# from ament_index_python import get_package_share_directory
 
 
 def load_wall(file):
@@ -17,6 +17,7 @@ def load_wall(file):
     with open(file, newline='') as csv_file:
         csv_reader = csv.DictReader(csv_file, delimiter=',')
         for row in csv_reader:
+            # print(row)
             id = row['Name']
             long = row['Longitude']
             lat = row['Latitude']
@@ -257,18 +258,26 @@ if __name__ == '__main__':
     # INPUTS:
     # GNSS racetrack boundary points
     left_wall_gps_ = load_wall(
-        get_package_share_directory('simulator')
-        + '/models/pennovation_track/gps_data/left.csv'
+        '../models/pennovation_track/gps_data/left.csv'
     )
+
+    """
+    get_package_share_directory('simulator')
+    + '/models/pennovation_track/gps_data/left.csv'
+    """
+
     right_wall_gps_ = load_wall(
-        get_package_share_directory('simulator')
-        + '/models/pennovation_track/gps_data/right.csv'
+        '../models/pennovation_track/gps_data/right.csv'
     )
+    """
+    get_package_share_directory('simulator')
+    + '/models/pennovation_track/gps_data/right.csv'
+    """
 
     # [longitude, latitude, elevation]
     # GNSS coordinates that corresponds to the XYZ coordinates origin point [0,0,0]
     # base_point_gps_ = [-86.945105, 40.437265, 0.0] # Purdue
-    base_point_gps_ = [-75.19868, 39.94165, 0.0] # Pennovation
+    base_point_gps_ = [-75.19913, 39.94117, 0.0] # Pennovation
 
     # If program should create an STL file (using a primitive tesselation algorithm).
     # Does not work good enough. It is better to create an SVG, import it to Blender,
@@ -308,7 +317,7 @@ if __name__ == '__main__':
         )
 
     svg_track_outside, svg_track_road, svg_track_inside = create_track_svg_parts(
-        bounding_rectangle_size=[150.0, 150.0],
+        bounding_rectangle_size=[100.0, 100.0],
         left_points=left_wall_xyz_,
         right_points=right_wall_xyz_,
     )
