@@ -9,7 +9,7 @@ from stl import mesh
 import matplotlib.pyplot as plt
 from operator import itemgetter
 from typing import Tuple
-# from ament_index_python import get_package_share_directory
+from ament_index_python import get_package_share_directory
 
 
 def load_wall(file):
@@ -258,21 +258,15 @@ if __name__ == '__main__':
     # INPUTS:
     # GNSS racetrack boundary points
     left_wall_gps_ = load_wall(
-        '../models/pennovation_track/gps_data/right.csv'
-    )
-
-    """
-    get_package_share_directory('simulator')
+        get_package_share_directory('simulator')
     + '/models/pennovation_track/gps_data/left.csv'
-    """
+    )
 
     right_wall_gps_ = load_wall(
-        '../models/pennovation_track/gps_data/left.csv'
+        get_package_share_directory('simulator')
+        + '/models/pennovation_track/gps_data/right.csv'
     )
-    """
-    get_package_share_directory('simulator')
-    + '/models/pennovation_track/gps_data/right.csv'
-    """
+
 
     # [longitude, latitude, elevation]
     # GNSS coordinates that corresponds to the XYZ coordinates origin point [0,0,0]

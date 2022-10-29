@@ -62,7 +62,8 @@ class MapSender(Node):
         # see https://answers.ros.org/question/290293/what-exactly-does-frame_locked-mean/
         self.map.frame_locked = True
 
-        self.map.mesh_resource = 'package://simulator/models/purdue_racetrack/meshes/track-svg-python.dae'
+        # self.map.mesh_resource = 'package://simulator/models/purdue_racetrack/meshes/track-svg-python.dae'
+        self.map.mesh_resource = 'package://simulator/models/pennovation_track/meshes/track-svg-python.dae'
         self.map.mesh_use_embedded_materials = False
 
         # TODO: It seems that we need to publish the map periodically.
