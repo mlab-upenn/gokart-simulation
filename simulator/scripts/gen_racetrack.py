@@ -77,7 +77,7 @@ def convert_points(
     base_point_gps,
     radius_north,
     radius_east,
-    num_points=200,
+    num_points=10,
     visualize=True,
 ):
     points_xyz = gnss_to_cartesian(
@@ -288,7 +288,7 @@ if __name__ == '__main__':
         base_point_gps=base_point_gps_,
         radius_north=radius_north_,
         radius_east=radius_east_,
-        num_points=200,
+        num_points=25,
         visualize=True,
     )
 
@@ -297,11 +297,11 @@ if __name__ == '__main__':
         base_point_gps=base_point_gps_,
         radius_north=radius_north_,
         radius_east=radius_east_,
-        num_points=200,
+        num_points=25,
         visualize=True,
     )
 
-    # plt.show()
+    plt.show()
 
     if create_stl_out_:
         create_stl_file(
@@ -315,8 +315,11 @@ if __name__ == '__main__':
         left_points=left_wall_xyz_,
         right_points=right_wall_xyz_,
     )
-    save_txt_to_file('track_outside.local.svg', svg_track_outside)
-    save_txt_to_file('track_road.local.svg', svg_track_road)
-    save_txt_to_file('track_inside.local.svg', svg_track_inside)
+    save_txt_to_file('/home/rithwik/UPenn/GoKart/gokart-simulation/simulator/models/pennovation_track/svg_files/track_outside.local.svg',
+        svg_track_outside)
+    save_txt_to_file('/home/rithwik/UPenn/GoKart/gokart-simulation/simulator/models/pennovation_track/svg_files/track_road.local.svg',
+        svg_track_road)
+    save_txt_to_file('/home/rithwik/UPenn/GoKart/gokart-simulation/simulator/models/pennovation_track/svg_files/track_inside.local.svg',
+        svg_track_inside)
 
     pass
