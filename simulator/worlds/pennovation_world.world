@@ -227,9 +227,10 @@
     <!-- Default settings of user camera -->
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>64.93482898 45.36219518 6.58845 0 0.739643 3.19219</pose>
+        <pose>60.0 45.0 10 0 0.739643 3.39219</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
+        <frame>base_link</frame>
       </camera>
     </gui>
   </world>

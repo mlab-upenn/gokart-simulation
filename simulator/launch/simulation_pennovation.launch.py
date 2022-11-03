@@ -45,13 +45,13 @@ def generate_launch_description():
     default_rviz_config = 'rviz/demo.rviz'
 
     # Pose where we want to spawn the robot
-    # (This is the starting line of the Purdue Racetrack)
-    spawn_x_val = '56.39758568'
-    spawn_y_val = '47.69298874'
+    # (Pennovation track start line)
+    spawn_x_val = '45.0'
+    spawn_y_val = '40.0'
     # It is better to spawn the car a bit above the ground and let it fall
     # to avoid weird simulation bugs due to the floating point numeric errors.
-    spawn_z_val = '0.17'
-    spawn_yaw_val = '-0.57'
+    spawn_z_val = '0.139698'
+    spawn_yaw_val = '1.0' 
 
     # Launch configuration variables
     config_abs_path = SharedFile(
