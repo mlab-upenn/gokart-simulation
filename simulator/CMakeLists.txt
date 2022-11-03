@@ -33,6 +33,7 @@ install(PROGRAMS
         scripts/gen_racetrack.py
         scripts/send_map.py
         scripts/spawn_cones.py
+        scripts/spawn_cones_pennovation.py
         DESTINATION lib/${PROJECT_NAME})
 
 # ament package generation and installing

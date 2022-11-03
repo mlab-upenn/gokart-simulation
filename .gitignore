@@ -29,3 +29,9 @@ Desktop.ini
 
 __pycache__/
 .env
+
+### ROS build files
+
+build/
+install/
+log/

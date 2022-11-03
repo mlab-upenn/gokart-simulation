@@ -39,7 +39,8 @@ def generate_launch_description():
     robot_name_in_model = 'gokart'
     path_desc = f'Must be either an absolute path or a relative path within the {package_name} package\'s share dir.'
     default_config = 'config/simulation.yaml'
-    default_world = 'worlds/test_world.world'
+    # default_world = 'worlds/test_world.world'
+    default_world = 'worlds/pennovation_world.world'
     default_urdf_model = 'urdf/gokart/main.urdf'
     default_rviz_config = 'rviz/demo.rviz'
 
